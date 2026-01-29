@@ -4,20 +4,55 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AppForge - Build Apps with AI</title>
+    <meta name="description" content="Generate complete web applications with AI. From imagination to installation in seconds.">
     
-    <!-- Puter.js for free AI -->
+    <!-- Puter.js for AI Integration -->
     <script src="https://js.puter.com/v2/"></script>
-    
-    <!-- Our Styles -->
-    <link rel="stylesheet" href="css/style.css?v=3.0">
     
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- AppForge Styles -->
+    <link rel="stylesheet" href="css/style.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔨</text></svg>">
 </head>
 <body>
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="modal">
+        <div class="modal-content">
+            <h3><i class="fas fa-cog"></i> AppForge Settings</h3>
+            <label for="apiKey"><i class="fas fa-key"></i> Grok API Key (Optional):</label>
+            <input type="password" id="apiKey" placeholder="sk-...">
+            <div class="note" style="margin-bottom: 20px;">
+                <i class="fas fa-info-circle"></i> 
+                <strong>Free Mode:</strong> Uses demo templates<br>
+                <strong>With API Key:</strong> Full AI generation with Grok
+            </div>
+            <div class="modal-buttons">
+                <button class="secondary-btn" onclick="closeSettings()">
+                    <i class="fas fa-times"></i> Cancel
+                </button>
+                <button class="primary-btn" onclick="saveSettings()">
+                    <i class="fas fa-save"></i> Save Settings
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-content">
+            <div class="spinner"></div>
+            <div id="statusMessage" class="status-message">Initializing AppForge...</div>
+        </div>
+    </div>
+
+    <!-- Message Popup -->
+    <div id="messagePopup" class="message-popup"></div>
+
+    <!-- Main Container -->
     <div class="container">
         <!-- Header -->
         <header>
@@ -29,6 +64,9 @@
             <div class="connection-status">
                 <span id="connectionStatus">🔵 Checking connection...</span>
             </div>
+            <button class="settings-btn" onclick="openSettings()" title="Settings">
+                <i class="fas fa-cog"></i>
+            </button>
         </header>
 
         <!-- Main App Area -->
@@ -39,7 +77,10 @@
                 
                 <div class="input-group">
                     <label for="appPrompt"><i class="fas fa-comment"></i> Describe your app:</label>
-                    <textarea id="appPrompt" rows="4" placeholder="Example: Create a restaurant website with menu, online ordering, and reservation system. Use a warm, inviting design.">Create a restaurant website with menu, online ordering, and reservation system.</textarea>
+                    <textarea id="appPrompt" rows="4" placeholder="Example: Create a restaurant website with menu, online ordering, and reservation system. Use a warm, inviting design with food photography.">Create a restaurant website with menu, online ordering, and reservation system.</textarea>
+                    <div style="margin-top: 8px; font-size: 0.9rem; color: #666;">
+                        <i class="fas fa-lightbulb"></i> Tip: Be specific for better results!
+                    </div>
                 </div>
                 
                 <div class="template-buttons">
@@ -57,6 +98,12 @@
                         <button class="template-btn" onclick="useTemplate('ecommerce')">
                             <i class="fas fa-shopping-cart"></i> E-commerce
                         </button>
+                        <button class="template-btn" onclick="useTemplate('blog')">
+                            <i class="fas fa-blog"></i> Blog
+                        </button>
+                        <button class="template-btn" onclick="useTemplate('dashboard')">
+                            <i class="fas fa-chart-line"></i> Dashboard
+                        </button>
                     </div>
                 </div>
                 
@@ -71,7 +118,7 @@
                 
                 <div class="note">
                     <i class="fas fa-info-circle"></i> 
-                    <strong>Note:</strong> AI requires HTTPS. If AI fails, use Demo mode or deploy to GitHub/Netlify.
+                    <strong>Note:</strong> Free tier uses enhanced demo templates. Add your Grok API key in Settings for full AI generation with the advanced system prompt.
                 </div>
             </div>
 
@@ -85,23 +132,29 @@
                             <div class="device-camera"></div>
                             <div class="device-speaker"></div>
                         </div>
-                        <iframe id="appPreview" title="App Preview"></iframe>
+                        <iframe id="appPreview" title="App Preview" sandbox="allow-scripts allow-same-origin"></iframe>
                     </div>
                 </div>
                 
-                <h2><i class="fas fa-code"></i> Generated Code</h2>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <h2><i class="fas fa-code"></i> Generated Code</h2>
+                    <div style="font-size: 0.9rem; color: #666;">
+                        <i class="fas fa-file-code"></i> <span id="codeStats">0 lines</span>
+                    </div>
+                </div>
+                
                 <div class="code-container">
                     <pre id="codeOutput">// Your app code will appear here</pre>
                 </div>
                 
                 <div class="export-buttons">
-                    <button id="copyBtn" onclick="copyCode()">
+                    <button id="copyBtn" onclick="copyCode()" title="Copy to clipboard">
                         <i class="fas fa-copy"></i> Copy Code
                     </button>
-                    <button id="downloadBtn" onclick="downloadApp()">
+                    <button id="downloadBtn" onclick="downloadApp()" title="Download as HTML file">
                         <i class="fas fa-download"></i> Download HTML
                     </button>
-                    <button id="testBtn" onclick="testInNewTab()">
+                    <button id="testBtn" onclick="testInNewTab()" title="Test in new tab">
                         <i class="fas fa-external-link-alt"></i> Test in New Tab
                     </button>
                 </div>
@@ -112,15 +165,15 @@
         <footer>
             <p>
                 <i class="fas fa-bolt"></i> Powered by Puter.js + Grok AI | 
-                <i class="fas fa-cloud"></i> Deploy to GitHub Pages for full AI features
+                <i class="fas fa-code"></i> Enhanced with 15-year dev experience
             </p>
             <p class="copyright">
-                Built with 🔨 by AppForge | Your 15-year SEO experience built in
+                <i class="fas fa-hammer"></i> Built with AppForge | Production-ready AI app generator
             </p>
         </footer>
     </div>
 
-    <!-- Our JavaScript -->
-    <script src="Js/app.js"></script>
+    <!-- AppForge JavaScript -->
+    <script src="js/app.js"></script>
 </body>
 </html>
