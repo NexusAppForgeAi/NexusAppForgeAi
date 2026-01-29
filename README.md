@@ -4,7 +4,7 @@
 
 AppForge is a free, client-side AI app builder powered by Puter.js. Describe your idea, and our AI generates a complete, responsive HTML/CSS/JS app instantly. Deploy with one click. Built by developers who were tired of complex, expensive tools.
 
-🌐 **Live Demo:** https://[YOUR-GITHUB-USERNAME].github.io/appforge/
+🌐 **Live Demo:** https://nexusappforgeai.github.io/NexusAppForgeAi/
 
 ---
 
