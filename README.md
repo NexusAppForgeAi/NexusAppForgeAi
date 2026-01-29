@@ -55,4 +55,4 @@ This project is distributed under the **MIT License**. See the `LICENSE` file fo
 
 ---
 
-**Built with 🔨 by [Your Name/Username]** | **Inspired by 15 years of SEO & tool-building frustration**
+**Built with 🔨 by [Pierre Godin/NexusAppForgeAi]** | **Inspired by 15 years of SEO & tool-building frustration**
