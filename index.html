@@ -9,7 +9,7 @@
     <script src="https://js.puter.com/v2/"></script>
     
     <!-- Our Styles with Cache Buster -->
-    <link rel="stylesheet" href="css/style.css?v=2.0">
+    <link rel="stylesheet" href="css/style.css?v=3.0">
     
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
@@ -29,7 +29,33 @@
             <div class="connection-status">
                 <span id="connectionStatus">⚡️ Checking connection...</span>
             </div>
+            <div class="settings-toggle">
+                <button onclick="toggleSettings()" title="Settings">
+                    <i class="fas fa-cog"></i>
+                </button>
+            </div>
         </header>
+
+        <!-- Settings Modal -->
+        <div id="settingsModal" class="modal">
+            <div class="modal-content">
+                <h2><i class="fas fa-cog"></i> Settings</h2>
+                <div class="setting-group">
+                    <label for="apiKey"><i class="fas fa-key"></i> Grok API Key (Optional)</label>
+                    <input type="password" id="apiKey" placeholder="sk-xxxxxxxxxxxx" 
+                           value="sk-ea347c2c7635b6bbd703e486e57e6a732e2bdd8b936ffce6">
+                    <p class="setting-help">Enter your own Grok API key for higher limits. Keep empty for free tier.</p>
+                </div>
+                <div class="modal-buttons">
+                    <button onclick="saveSettings()" class="save-btn">
+                        <i class="fas fa-save"></i> Save Settings
+                    </button>
+                    <button onclick="toggleSettings()" class="cancel-btn">
+                        <i class="fas fa-times"></i> Close
+                    </button>
+                </div>
+            </div>
+        </div>
 
         <!-- Main App Container -->
         <div class="app-container">
@@ -75,7 +101,7 @@
                 <div class="note">
                     <i class="fas fa-info-circle"></i>
                     <div>
-                        <strong>No API keys needed!</strong> Uses Puter.js for free AI generation. If Puter.js is unavailable, we'll switch to Demo Mode with beautiful templates.
+                        <strong>No API keys needed!</strong> Uses Puter.js for free AI generation. Add your own key in Settings for higher limits.
                     </div>
                 </div>
             </div>
@@ -123,27 +149,7 @@
         </footer>
     </div>
 
-    <!-- FIXED: Capital 'J' in 'Js' to match GitHub folder -->
+    <!-- Your main app script -->
     <script src="Js/app.js"></script>
-    
-    <!-- CSS Debug Script -->
-    <script>
-        // Force CSS reload if needed
-        window.addEventListener('load', function() {
-            console.log('CSS Debug: Checking styles...');
-            var cssLink = document.querySelector('link[href^="css/style.css"]');
-            if (cssLink) {
-                console.log('CSS Link found:', cssLink.href);
-                // If no styles applied after 2 seconds, force reload
-                setTimeout(function() {
-                    var computedStyle = window.getComputedStyle(document.body);
-                    if (computedStyle.fontFamily === 'serif') {
-                        console.log('CSS not loaded, forcing reload...');
-                        cssLink.href = cssLink.href.split('?')[0] + '?v=' + Date.now();
-                    }
-                }, 2000);
-            }
-        });
-    </script>
 </body>
 </html>
