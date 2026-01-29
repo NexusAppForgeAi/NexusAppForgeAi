@@ -4,6 +4,8 @@ console.log("AppForge loaded!");
 // Store current app code
 let currentAppCode = '';
 let isUsingAI = false;
+let userAPIKey = '';
+let useCustomKey = false;
 
 // Template definitions
 const templates = {
@@ -13,10 +15,46 @@ const templates = {
     ecommerce: "Create an e-commerce website with product grid, shopping cart, checkout system, customer reviews, and secure payment options."
 };
 
+// Settings Modal Functions
+function toggleSettings() {
+    const modal = document.getElementById('settingsModal');
+    if (modal.style.display === 'block') {
+        modal.style.display = 'none';
+    } else {
+        modal.style.display = 'block';
+        // Load saved API key
+        const savedKey = localStorage.getItem('appforge_api_key');
+        if (savedKey) {
+            document.getElementById('apiKey').value = savedKey;
+            useCustomKey = true;
+        }
+    }
+}
+
+function saveSettings() {
+    const apiKeyInput = document.getElementById('apiKey').value.trim();
+    
+    if (apiKeyInput) {
+        localStorage.setItem('appforge_api_key', apiKeyInput);
+        userAPIKey = apiKeyInput;
+        useCustomKey = true;
+        showMessage('✅ API Key saved!', 'success');
+    } else {
+        localStorage.removeItem('appforge_api_key');
+        userAPIKey = '';
+        useCustomKey = false;
+        showMessage('✅ Using free Puter.js tier', 'success');
+    }
+    
+    // Close modal
+    toggleSettings();
+}
+
 // Check if Puter.js is available
 function checkPuterConnection() {
     if (typeof puter !== 'undefined' && puter.ai) {
-        document.getElementById('connectionStatus').innerHTML = '🟢 Connected to Puter.js AI';
+        document.getElementById('connectionStatus').innerHTML = 
+            useCustomKey ? '🟢 Using Custom API Key' : '🟢 Connected to Puter.js AI';
         document.getElementById('connectionStatus').style.color = '#4CAF50';
         isUsingAI = true;
         return true;
@@ -54,7 +92,7 @@ async function generateApp() {
     try {
         // Check if we can use AI
         if (checkPuterConnection() && isUsingAI) {
-            // Try AI generation
+            // Try AI generation with custom key if available
             await generateWithAI(prompt);
         } else {
             // Use demo mode
@@ -88,6 +126,11 @@ async function generateWithAI(prompt) {
     Create a website for: ${prompt}
     
     Return ONLY the HTML code, no explanations.`;
+    
+    // Configure Puter.js with custom key if available
+    if (useCustomKey && userAPIKey) {
+        puter.auth = userAPIKey;
+    }
     
     const response = await puter.ai.chat(
         systemPrompt,
@@ -406,6 +449,14 @@ function showMessage(text, type) {
 
 // Initialize on page load
 window.addEventListener('DOMContentLoaded', function() {
+    // Load saved API key
+    const savedKey = localStorage.getItem('appforge_api_key');
+    if (savedKey) {
+        userAPIKey = savedKey;
+        useCustomKey = true;
+        console.log('Custom API key loaded from storage');
+    }
+    
     // Check connection
     setTimeout(checkPuterConnection, 1000);
     
@@ -417,7 +468,7 @@ window.addEventListener('DOMContentLoaded', function() {
     
     // Auto-generate demo app after 2 seconds
     setTimeout(() => {
-        if (checkPuterConnection()) {
+        if (checkPuterConnection() && isUsingAI) {
             // Try AI if available
             generateApp();
         } else {
