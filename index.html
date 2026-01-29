@@ -8,8 +8,8 @@
     <!-- Put your JS for free AI -->
     <script src="https://js.puter.com/v2/"></script>
     
-    <!-- Our Styles -->
-    <link rel="stylesheet" href="css/style.css">
+    <!-- Our Styles with Cache Buster -->
+    <link rel="stylesheet" href="css/style.css?v=2.0">
     
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
@@ -39,7 +39,7 @@
                 
                 <div class="input-group">
                     <label for="appPrompt"><i class="fas fa-lightbulb"></i> What do you want to build?</label>
-                    <textarea id="appPrompt" placeholder="Example: Create a modern restaurant website with menu, online ordering, reservation system, location map, and food gallery..."></textarea>
+                    <textarea id="appPrompt" placeholder="Example: Create a modern restaurant website with menu, online ordering, reservation system, location map, and food gallery...">Create a modern restaurant website with menu, online ordering, reservation system, location map, and food gallery. Use warm colors and appetizing images.</textarea>
                 </div>
 
                 <!-- Template Buttons -->
@@ -118,12 +118,32 @@
 
         <!-- Footer -->
         <footer>
-            <p>Built with <i class="fas fa-heart" style="color:#FF3366;"></i> by <strong>AppForge</strong></p>
-            <p class="copyright">© 2023 AppForge. All rights reserved. | Free for commercial use.</p>
+            <p>Built with ❤️ by <strong>AppForge</strong></p>
+            <p class="copyright">© 2024 AppForge. Free for personal/non-commercial use.<br>Commercial/white-label licenses available.</p>
         </footer>
     </div>
 
     <!-- Your main app script -->
     <script src="js/app.js"></script>
+    
+    <!-- CSS Debug Script -->
+    <script>
+        // Force CSS reload if needed
+        window.addEventListener('load', function() {
+            console.log('CSS Debug: Checking styles...');
+            var cssLink = document.querySelector('link[href^="css/style.css"]');
+            if (cssLink) {
+                console.log('CSS Link found:', cssLink.href);
+                // If no styles applied after 2 seconds, force reload
+                setTimeout(function() {
+                    var computedStyle = window.getComputedStyle(document.body);
+                    if (computedStyle.fontFamily === 'serif') {
+                        console.log('CSS not loaded, forcing reload...');
+                        cssLink.href = cssLink.href.split('?')[0] + '?v=' + Date.now();
+                    }
+                }, 2000);
+            }
+        });
+    </script>
 </body>
 </html>
