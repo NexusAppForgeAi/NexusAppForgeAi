@@ -12,15 +12,117 @@
     <link rel="stylesheet" href="css/style.css">
     
     <!-- Font Awesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/font-awesome.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
     
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <!-- This div will be populated by your app.js -->
-    <div id="appforge-root"></div>
-    
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <div class="logo">
+                <i class="fas fa-hammer"></i>
+                <h1>AppForge</h1>
+            </div>
+            <p class="tagline">From Imagination to Installation – 100% Free. No API Keys Needed.</p>
+            <div class="connection-status">
+                <span id="connectionStatus">⚡️ Checking connection...</span>
+            </div>
+        </header>
+
+        <!-- Main App Container -->
+        <div class="app-container">
+            <!-- Left Panel: Input -->
+            <div class="panel input-panel">
+                <h2><i class="fas fa-edit"></i> Describe Your App</h2>
+                
+                <div class="input-group">
+                    <label for="appPrompt"><i class="fas fa-lightbulb"></i> What do you want to build?</label>
+                    <textarea id="appPrompt" placeholder="Example: Create a modern restaurant website with menu, online ordering, reservation system, location map, and food gallery..."></textarea>
+                </div>
+
+                <!-- Template Buttons -->
+                <div class="template-buttons">
+                    <h3><i class="fas fa-th-large"></i> Start with a Template</h3>
+                    <div class="template-grid">
+                        <button class="template-btn" onclick="useTemplate('restaurant')">
+                            <i class="fas fa-utensils"></i> Restaurant
+                        </button>
+                        <button class="template-btn" onclick="useTemplate('portfolio')">
+                            <i class="fas fa-briefcase"></i> Portfolio
+                        </button>
+                        <button class="template-btn" onclick="useTemplate('business')">
+                            <i class="fas fa-building"></i> Business
+                        </button>
+                        <button class="template-btn" onclick="useTemplate('ecommerce')">
+                            <i class="fas fa-shopping-cart"></i> E-commerce
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="action-buttons">
+                    <button id="generateBtn" onclick="generateApp()">
+                        <i class="fas fa-bolt"></i> Generate App with AI
+                    </button>
+                    <button id="demoBtn" onclick="useDemoMode()">
+                        <i class="fas fa-magic"></i> Demo Mode
+                    </button>
+                </div>
+
+                <!-- Note -->
+                <div class="note">
+                    <i class="fas fa-info-circle"></i>
+                    <div>
+                        <strong>No API keys needed!</strong> Uses Puter.js for free AI generation. If Puter.js is unavailable, we'll switch to Demo Mode with beautiful templates.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel: Preview & Code -->
+            <div class="panel output-panel">
+                <h2><i class="fas fa-eye"></i> Live Preview & Code</h2>
+                
+                <!-- Preview -->
+                <div class="preview-container">
+                    <div class="device-frame">
+                        <div class="device-header">
+                            <div class="device-camera"></div>
+                            <div class="device-speaker"></div>
+                        </div>
+                        <iframe id="appPreview" title="App Preview"></iframe>
+                    </div>
+                </div>
+
+                <!-- Generated Code -->
+                <div class="code-container">
+                    <h3><i class="fas fa-code"></i> Generated Code</h3>
+                    <pre><code id="codeOutput">// Your generated code will appear here...</code></pre>
+                </div>
+
+                <!-- Export Buttons -->
+                <div class="export-buttons">
+                    <button id="copyBtn" onclick="copyCode()">
+                        <i class="fas fa-copy"></i> Copy Code
+                    </button>
+                    <button id="downloadBtn" onclick="downloadApp()" disabled>
+                        <i class="fas fa-download"></i> Download HTML
+                    </button>
+                    <button id="testBtn" onclick="testInNewTab()">
+                        <i class="fas fa-external-link-alt"></i> Test in New Tab
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer>
+            <p>Built with <i class="fas fa-heart" style="color:#FF3366;"></i> by <strong>AppForge</strong></p>
+            <p class="copyright">© 2023 AppForge. All rights reserved. | Free for commercial use.</p>
+        </footer>
+    </div>
+
     <!-- Your main app script -->
     <script src="js/app.js"></script>
 </body>
