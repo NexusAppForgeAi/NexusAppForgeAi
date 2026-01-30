@@ -1,203 +1,424 @@
-/* ===== APK BUILDER STYLES ===== */
-.apk-builder {
-    background-color: var(--gray-50);
-    border-radius: var(--radius-lg);
-    border: 1px solid var(--gray-200);
-    margin-top: var(--spacing-lg);
-    overflow: hidden;
+/* APK Builder Specific Styles */
+
+.apk-builder-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
 }
 
-.apk-header {
+.apk-builder-content {
+    background: var(--surface-color);
+    border-radius: var(--radius);
+    width: 90%;
+    max-width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    animation: modalFadeIn 0.3s ease;
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9) translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.apk-builder-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: var(--spacing-lg);
-    background: linear-gradient(135deg, var(--success), var(--primary));
-    color: white;
 }
 
-.apk-header h3 {
-    margin: 0;
-    color: white;
+.apk-builder-header h3 {
+    color: var(--text-color);
+    font-size: 1.5rem;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 50%;
+    transition: var(--transition);
+}
+
+.close-btn:hover {
+    background: var(--border-color);
+    color: var(--text-color);
+}
+
+.apk-builder-body {
+    padding: 2rem;
+}
+
+.build-step {
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.build-step h4 {
+    color: var(--text-color);
+    margin-bottom: 1rem;
     display: flex;
     align-items: center;
-    gap: var(--spacing-sm);
+    gap: 0.5rem;
 }
 
-.apk-form {
-    padding: var(--spacing-lg);
+.build-step.completed h4 {
+    color: var(--secondary-color);
 }
 
-.apk-actions {
+.build-step.active h4 {
+    color: var(--primary-color);
+}
+
+.step-indicator {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--border-color);
+    color: var(--text-secondary);
     display: flex;
-    gap: var(--spacing-md);
-    margin-top: var(--spacing-xl);
-    justify-content: flex-end;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: 600;
 }
 
-/* Build Progress Modal */
+.build-step.completed .step-indicator {
+    background: var(--secondary-color);
+    color: white;
+}
+
+.build-step.active .step-indicator {
+    background: var(--primary-color);
+    color: white;
+}
+
+.app-config-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-group label {
+    color: var(--text-color);
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.form-group input, .form-group textarea, .form-group select {
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius);
+    border: 1px solid var(--border-color);
+    background: var(--surface-color);
+    color: var(--text-color);
+    font-family: 'Inter', sans-serif;
+    transition: var(--transition);
+}
+
+.form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(255, 51, 102, 0.1);
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.icon-preview {
+    width: 128px;
+    height: 128px;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    border-radius: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    color: white;
+    margin: 1rem 0;
+    box-shadow: var(--shadow);
+}
+
 .build-progress {
+    background: var(--background-color);
+    border-radius: var(--radius);
+    padding: 2rem;
     text-align: center;
 }
 
 .progress-bar {
-    height: 12px;
-    background-color: var(--gray-200);
-    border-radius: var(--radius-full);
+    height: 8px;
+    background: var(--border-color);
+    border-radius: 4px;
+    margin: 2rem 0;
     overflow: hidden;
-    margin-bottom: var(--spacing-xl);
 }
 
 .progress-fill {
     height: 100%;
-    background: linear-gradient(90deg, var(--primary), var(--success));
-    border-radius: var(--radius-full);
-    transition: width 0.3s ease;
+    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+    border-radius: 4px;
     width: 0%;
+    transition: width 0.3s ease;
 }
 
-.build-steps {
+.progress-steps {
     display: flex;
-    flex-direction: column;
-    gap: var(--spacing-md);
+    justify-content: space-between;
+    margin-top: 1rem;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
 }
 
-.build-step {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-md);
-    padding: var(--spacing-md);
-    background-color: var(--gray-50);
-    border-radius: var(--radius-md);
-    transition: all var(--transition-fast);
-}
-
-.build-step.completed {
-    background-color: rgba(76, 201, 240, 0.1);
-    border-left: 4px solid var(--success);
-}
-
-.build-step.active {
-    background-color: rgba(67, 97, 238, 0.1);
-    border-left: 4px solid var(--primary);
-}
-
-.step-icon {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.875rem;
-}
-
-.build-step.completed .step-icon {
-    background-color: var(--success);
-    color: white;
-}
-
-.build-step.active .step-icon {
-    background-color: var(--primary);
-    color: white;
-}
-
-.step-info {
+.progress-step {
+    text-align: center;
     flex: 1;
+}
+
+.progress-step.active {
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.progress-step.completed {
+    color: var(--secondary-color);
+}
+
+.build-log {
+    background: var(--background-color);
+    border-radius: var(--radius);
+    padding: 1rem;
+    margin-top: 1rem;
+    max-height: 200px;
+    overflow-y: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--text-color);
+}
+
+.log-entry {
+    padding: 0.25rem 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.log-entry.success {
+    color: #10B981;
+}
+
+.log-entry.error {
+    color: #EF4444;
+}
+
+.log-entry.info {
+    color: var(--text-secondary);
+}
+
+.download-section {
+    text-align: center;
+    padding: 2rem;
+}
+
+.apk-file {
+    background: var(--background-color);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.apk-info {
     text-align: left;
 }
 
-.step-info h4 {
-    margin: 0 0 var(--spacing-xs);
-    font-size: 1rem;
+.apk-info h5 {
+    color: var(--text-color);
+    margin-bottom: 0.5rem;
 }
 
-.step-info p {
-    margin: 0;
-    color: var(--gray-600);
-    font-size: 0.875rem;
+.apk-info p {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
 }
 
-.step-status {
+.download-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem 2rem;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    border: none;
+    border-radius: var(--radius);
     font-weight: 600;
-    font-size: 0.875rem;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: var(--transition);
+    text-decoration: none;
 }
 
-.build-step.completed .step-status {
-    color: var(--success);
+.download-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(255, 51, 102, 0.3);
 }
 
-.build-step.active .step-status {
-    color: var(--primary);
-}
-
-/* APK Output */
-.apk-output {
-    padding: var(--spacing-lg);
-    background-color: var(--gray-50);
-    border-radius: var(--radius-lg);
-    border: 2px dashed var(--gray-300);
+.license-required {
+    background: rgba(255, 51, 102, 0.1);
+    border: 2px solid var(--primary-color);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    margin-top: 1.5rem;
     text-align: center;
-    margin-top: var(--spacing-lg);
 }
 
-.apk-output.success {
-    border-color: var(--success);
-    background-color: rgba(76, 201, 240, 0.05);
+.license-required h4 {
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
 }
 
-.apk-file-info {
+.payment-options {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: var(--spacing-md);
-    margin: var(--spacing-lg) 0;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
 }
 
-.apk-file-stat {
+.payment-option {
+    background: var(--surface-color);
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius);
+    padding: 1rem;
     text-align: center;
-    padding: var(--spacing-md);
-    background-color: white;
-    border-radius: var(--radius-md);
-    border: 1px solid var(--gray-200);
+    cursor: pointer;
+    transition: var(--transition);
 }
 
-.apk-file-stat .value {
+.payment-option:hover, .payment-option.selected {
+    border-color: var(--primary-color);
+    background: rgba(255, 51, 102, 0.05);
+}
+
+.payment-option.selected {
+    border-width: 3px;
+}
+
+.payment-icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.payment-option h5 {
+    color: var(--text-color);
+    margin-bottom: 0.5rem;
+}
+
+.payment-option p {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.price-tag {
     font-size: 1.5rem;
     font-weight: 700;
-    color: var(--primary);
-    display: block;
-    margin-bottom: var(--spacing-xs);
+    color: var(--primary-color);
+    margin-top: 0.5rem;
 }
 
-.apk-file-stat .label {
-    font-size: 0.875rem;
-    color: var(--gray-600);
+.subscription-benefits {
+    margin-top: 1.5rem;
 }
 
-.apk-actions-row {
-    display: flex;
-    gap: var(--spacing-md);
-    justify-content: center;
-    margin-top: var(--spacing-lg);
+.benefit-list {
+    list-style: none;
+    padding: 0;
 }
 
-/* QR Code for APK Sharing */
-.qr-container {
-    display: inline-block;
-    padding: var(--spacing-md);
-    background-color: white;
-    border-radius: var(--radius-md);
-    margin: var(--spacing-lg) 0;
-}
-
-.qr-placeholder {
-    width: 150px;
-    height: 150px;
-    background: linear-gradient(45deg, var(--primary-light), var(--primary));
-    border-radius: var(--radius-md);
+.benefit-list li {
+    padding: 0.5rem 0;
+    color: var(--text-color);
     display: flex;
     align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 1.5rem;
+    gap: 0.5rem;
+}
+
+.benefit-list li:before {
+    content: "✓";
+    color: var(--secondary-color);
+    font-weight: bold;
+}
+
+/* Loading Animation for Build */
+.build-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 3rem;
+}
+
+.build-spinner {
+    width: 60px;
+    height: 60px;
+    border: 4px solid var(--border-color);
+    border-top: 4px solid var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 1rem;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* QR Code Display */
+.qr-container {
+    text-align: center;
+    padding: 2rem;
+}
+
+.qr-code {
+    width: 200px;
+    height: 200px;
+    background: white;
+    margin: 1rem auto;
+    padding: 1rem;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+
+.qr-instructions {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-top: 1rem;
+    max-width: 300px;
+    margin-left: auto;
+    margin-right: auto;
 }
