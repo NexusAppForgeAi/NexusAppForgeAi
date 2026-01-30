@@ -5,14 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AppForge - Build Apps with AI</title>
     
-    <!-- Puter.js for free AI -->
+    <!-- Put your JS for free AI -->
     <script src="https://js.puter.com/v2/"></script>
     
-    <!-- Our Styles -->
+    <!-- Our Styles with Cache Buster -->
     <link rel="stylesheet" href="css/style.css?v=3.0">
     
     <!-- Font Awesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
     
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -25,25 +25,52 @@
                 <i class="fas fa-hammer"></i>
                 <h1>AppForge</h1>
             </div>
-            <p class="tagline">From Imagination to Installation</p>
+            <p class="tagline">From Imagination to Installation – 100% Free. No API Keys Needed.</p>
             <div class="connection-status">
-                <span id="connectionStatus">🔵 Checking connection...</span>
+                <span id="connectionStatus">⚡️ Checking connection...</span>
+            </div>
+            <div class="settings-toggle">
+                <button onclick="toggleSettings()" title="Settings">
+                    <i class="fas fa-cog"></i>
+                </button>
             </div>
         </header>
 
-        <!-- Main App Area -->
+        <!-- Settings Modal -->
+        <div id="settingsModal" class="modal">
+            <div class="modal-content">
+                <h2><i class="fas fa-cog"></i> Settings</h2>
+                <div class="setting-group">
+                    <label for="apiKey"><i class="fas fa-key"></i> Grok API Key (Optional)</label>
+                    <input type="password" id="apiKey" placeholder="sk-xxxxxxxxxxxx" 
+                           value="sk-ea347c2c7635b6bbd703e486e57e6a732e2bdd8b936ffce6">
+                    <p class="setting-help">Enter your own Grok API key for higher limits. Keep empty for free tier.</p>
+                </div>
+                <div class="modal-buttons">
+                    <button onclick="saveSettings()" class="save-btn">
+                        <i class="fas fa-save"></i> Save Settings
+                    </button>
+                    <button onclick="toggleSettings()" class="cancel-btn">
+                        <i class="fas fa-times"></i> Close
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main App Container -->
         <div class="app-container">
             <!-- Left Panel: Input -->
             <div class="panel input-panel">
-                <h2><i class="fas fa-edit"></i> What to Build?</h2>
+                <h2><i class="fas fa-edit"></i> Describe Your App</h2>
                 
                 <div class="input-group">
-                    <label for="appPrompt"><i class="fas fa-comment"></i> Describe your app:</label>
-                    <textarea id="appPrompt" rows="4" placeholder="Example: Create a restaurant website with menu, online ordering, and reservation system. Use a warm, inviting design.">Create a restaurant website with menu, online ordering, and reservation system.</textarea>
+                    <label for="appPrompt"><i class="fas fa-lightbulb"></i> What do you want to build?</label>
+                    <textarea id="appPrompt" placeholder="Example: Create a modern restaurant website with menu, online ordering, reservation system, location map, and food gallery...">Create a modern restaurant website with menu, online ordering, reservation system, location map, and food gallery. Use warm colors and appetizing images.</textarea>
                 </div>
-                
+
+                <!-- Template Buttons -->
                 <div class="template-buttons">
-                    <h3><i class="fas fa-palette"></i> Quick Templates:</h3>
+                    <h3><i class="fas fa-th-large"></i> Start with a Template</h3>
                     <div class="template-grid">
                         <button class="template-btn" onclick="useTemplate('restaurant')">
                             <i class="fas fa-utensils"></i> Restaurant
@@ -59,26 +86,31 @@
                         </button>
                     </div>
                 </div>
-                
+
+                <!-- Action Buttons -->
                 <div class="action-buttons">
                     <button id="generateBtn" onclick="generateApp()">
-                        <i class="fas fa-robot"></i> Generate App with AI
+                        <i class="fas fa-bolt"></i> Generate App with AI
                     </button>
                     <button id="demoBtn" onclick="useDemoMode()">
-                        <i class="fas fa-eye"></i> View Demo (No AI)
+                        <i class="fas fa-magic"></i> Demo Mode
                     </button>
                 </div>
-                
+
+                <!-- Note -->
                 <div class="note">
-                    <i class="fas fa-info-circle"></i> 
-                    <strong>Note:</strong> AI requires HTTPS. If AI fails, use Demo mode or deploy to GitHub/Netlify.
+                    <i class="fas fa-info-circle"></i>
+                    <div>
+                        <strong>No API keys needed!</strong> Uses Puter.js for free AI generation. Add your own key in Settings for higher limits.
+                    </div>
                 </div>
             </div>
 
-            <!-- Right Panel: Preview -->
-            <div class="panel preview-panel">
-                <h2><i class="fas fa-eye"></i> Live Preview</h2>
+            <!-- Right Panel: Preview & Code -->
+            <div class="panel output-panel">
+                <h2><i class="fas fa-eye"></i> Live Preview & Code</h2>
                 
+                <!-- Preview -->
                 <div class="preview-container">
                     <div class="device-frame">
                         <div class="device-header">
@@ -88,17 +120,19 @@
                         <iframe id="appPreview" title="App Preview"></iframe>
                     </div>
                 </div>
-                
-                <h2><i class="fas fa-code"></i> Generated Code</h2>
+
+                <!-- Generated Code -->
                 <div class="code-container">
-                    <pre id="codeOutput">// Your app code will appear here</pre>
+                    <h3><i class="fas fa-code"></i> Generated Code</h3>
+                    <pre><code id="codeOutput">// Your generated code will appear here...</code></pre>
                 </div>
-                
+
+                <!-- Export Buttons -->
                 <div class="export-buttons">
                     <button id="copyBtn" onclick="copyCode()">
                         <i class="fas fa-copy"></i> Copy Code
                     </button>
-                    <button id="downloadBtn" onclick="downloadApp()">
+                    <button id="downloadBtn" onclick="downloadApp()" disabled>
                         <i class="fas fa-download"></i> Download HTML
                     </button>
                     <button id="testBtn" onclick="testInNewTab()">
@@ -110,17 +144,12 @@
 
         <!-- Footer -->
         <footer>
-            <p>
-                <i class="fas fa-bolt"></i> Powered by Puter.js + Grok AI | 
-                <i class="fas fa-cloud"></i> Deploy to GitHub Pages for full AI features
-            </p>
-            <p class="copyright">
-                Built with 🔨 by AppForge | Your 15-year SEO experience built in
-            </p>
+            <p>Built with ❤️ by <strong>AppForge</strong></p>
+            <p class="copyright">© 2024 AppForge. Free for personal/non-commercial use.<br>Commercial/white-label licenses available.</p>
         </footer>
     </div>
 
-    <!-- Our JavaScript -->
+    <!-- Your main app script -->
     <script src="Js/app.js"></script>
 </body>
 </html>
