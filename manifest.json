@@ -1,42 +1,21 @@
 {
-  "name": "AppForge AI",
+  "name": "AppForge",
   "short_name": "AppForge",
-  "description": "AI-powered mobile app generator - From Imagination to Installation",
+  "description": "AppForge - Build amazing applications",
   "start_url": "/NexusAppForgeAi/",
   "display": "standalone",
-  "background_color": "#0f172a",
-  "theme_color": "#4361ee",
-  "orientation": "any",
-  "scope": "/NexusAppForgeAi/",
-  "categories": ["development", "productivity", "utilities"],
-  "lang": "en-US",
-  "dir": "ltr",
-  "prefer_related_applications": false,
+  "background_color": "#ffffff",
+  "theme_color": "#1a1a2e",
   "icons": [
     {
-      "src": "assets/icons/favicon-16x16.png",
-      "sizes": "16x16",
-      "type": "image/png"
-    },
-    {
-      "src": "assets/icons/favicon-32x32.png",
-      "sizes": "32x32",
-      "type": "image/png"
-    },
-    {
-      "src": "assets/icons/icon-192.png",
+      "src": "/NexusAppForgeAi/icon-192.png",
       "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "type": "image/png"
     },
     {
-      "src": "assets/icons/icon-512.png",
+      "src": "/NexusAppForgeAi/icon-512.png",
       "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "type": "image/png"
     }
-  ],
-  "screenshots": [],
-  "shortcuts": [],
-  "related_applications": []
+  ]
 }
