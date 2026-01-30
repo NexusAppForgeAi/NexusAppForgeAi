@@ -3,537 +3,307 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="AppForge AI - Create mobile apps from text descriptions. Generate HTML, PWA, and APK files instantly.">
-    <meta name="keywords" content="AI app builder, mobile app generator, PWA, APK, no-code">
-    <meta name="author" content="AppForge AI">
-    <meta name="ai-agent" content="NexusAppForgeAI v2.0">
-    <meta name="ai-principles" content="assume-inexperience, innovate-beyond, superior-design">
-    <title>AppForge AI - From Imagination to Installation</title>
+    <title>AppForge - From Imagination to Installation</title>
     
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
     
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+    <!-- Icons -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png">
+    <link rel="apple-touch-icon" sizes="512x512" href="icon-512.png">
     
     <!-- CSS Files -->
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/apk-builder.css">
     <link rel="stylesheet" href="css/syntax-highlight.css">
     
-    <!-- PWA Support -->
-    <link rel="manifest" href="manifest.json">
-    <link rel="icon" href="assets/icons/favicon.ico" type="image/x-icon">
-    <link rel="icon" type="image/png" sizes="32x32" href="assets/icons/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="assets/icons/favicon-16x16.png">
-    <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
     
-    <!-- Theme Color -->
-    <meta name="theme-color" content="#4361ee">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #f5f7fa; color: #333; }
+    </style>
 </head>
 <body>
-    <!-- Header -->
-    <header>
-        <div class="container">
-            <nav class="navbar">
-                <a href="#" class="logo">
-                    <img src="assets/images/logo-small.png" alt="AppForge AI" class="logo-img">
-                </a>
-                
-                <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle menu">
-                    <i class="fas fa-bars"></i>
-                </button>
-                
-                <div class="nav-links" id="navLinks">
-                    <a href="#" class="nav-link active" data-section="editor">
-                        <i class="fas fa-code"></i> Editor
-                    </a>
-                    <a href="#" class="nav-link" data-section="templates">
-                        <i class="fas fa-layer-group"></i> Templates
-                    </a>
-                    <a href="#" class="nav-link" data-section="export">
-                        <i class="fas fa-download"></i> Export
-                    </a>
-                    <a href="#" class="nav-link" data-section="docs">
-                        <i class="fas fa-book"></i> Docs
-                    </a>
-                    
-                    <div class="nav-controls">
-                        <button class="btn btn-icon btn-outline" id="themeToggle" title="Toggle theme">
-                            <i class="fas fa-moon"></i>
-                        </button>
-                        <button class="btn btn-primary" id="viewPromptBtn">
-                            <i class="fas fa-robot"></i> AI System
-                        </button>
-                    </div>
-                </div>
-            </nav>
+    <!-- Loading Screen -->
+    <div id="loadingScreen" class="loading-screen">
+        <div class="loading-content">
+            <div class="loading-logo">🔨</div>
+            <h1>AppForge</h1>
+            <p>Loading your app builder...</p>
+            <div class="loading-bar">
+                <div class="loading-progress"></div>
+            </div>
         </div>
-    </header>
+    </div>
 
-    <!-- Main Content -->
-    <main>
-        <div class="container">
-            <div class="app-grid">
-                <!-- Left Panel: Editor & Configuration -->
-                <div class="left-panel">
-                    <!-- AI Generator Section -->
-                    <div class="panel generator-panel">
-                        <div class="panel-header">
-                            <h2><i class="fas fa-magic"></i> AI App Generator</h2>
-                            <p>Describe your app and let AI build it</p>
+    <!-- Main App Container -->
+    <div id="appContainer" class="app-container" style="display: none;">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-left">
+                <div class="logo">🔨 <span>AppForge</span></div>
+                <nav class="main-nav">
+                    <button class="nav-btn active" data-tab="editor">Editor</button>
+                    <button class="nav-btn" data-tab="templates">Templates</button>
+                    <button class="nav-btn" data-tab="ai-generator">AI Generator</button>
+                    <button class="nav-btn" data-tab="export">Export</button>
+                    <button class="nav-btn" data-tab="account">Account</button>
+                </nav>
+            </div>
+            <div class="header-right">
+                <button id="themeToggle" class="icon-btn" title="Toggle theme">🌓</button>
+                <button id="saveBtn" class="btn btn-outline">Save</button>
+                <button id="previewBtn" class="btn btn-primary">Preview</button>
+                <div class="user-menu">
+                    <span id="userName">Guest</span>
+                    <div class="user-dropdown">
+                        <button id="loginBtn">Login</button>
+                        <button id="registerBtn">Register</button>
+                        <button id="upgradeBtn">Upgrade to Pro</button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Editor Tab -->
+            <div id="editorTab" class="tab-content active">
+                <div class="editor-container">
+                    <div class="code-editor-section">
+                        <div class="editor-header">
+                            <h3>HTML Code Editor</h3>
+                            <div class="editor-tools">
+                                <button class="tool-btn" title="Format Code">✨</button>
+                                <button class="tool-btn" title="Minify">📦</button>
+                                <button class="tool-btn" title="Clear">🗑️</button>
+                            </div>
                         </div>
-                        
-                        <div class="tab-container">
-                            <div class="tabs">
-                                <button class="tab-btn active" data-tab="ai">AI Generator</button>
-                                <button class="tab-btn" data-tab="manual">Manual Code</button>
-                                <button class="tab-btn" data-tab="templates">Templates</button>
-                            </div>
-                            
-                            <!-- AI Generator Tab -->
-                            <div class="tab-content active" id="ai-tab">
-                                <div class="form-group">
-                                    <label for="appDescription">
-                                        <i class="fas fa-comment-alt"></i> App Description
-                                    </label>
-                                    <textarea id="appDescription" placeholder="Describe your mobile app in detail...">Create a task management app with:
-• Login screen with email/password
-• Dashboard showing task statistics
-• Task list with swipe actions
-• Add/edit task modal
-• Dark/light theme toggle
-• Push notifications</textarea>
-                                </div>
-                                
-                                <div class="form-row">
-                                    <div class="form-group">
-                                        <label for="appType">
-                                            <i class="fas fa-mobile-alt"></i> App Type
-                                        </label>
-                                        <select id="appType" class="form-control">
-                                            <option value="task">Task Manager</option>
-                                            <option value="notes">Notes App</option>
-                                            <option value="fitness">Fitness Tracker</option>
-                                            <option value="ecommerce">E-commerce</option>
-                                            <option value="social">Social App</option>
-                                            <option value="custom">Custom</option>
-                                        </select>
-                                    </div>
-                                    
-                                    <div class="form-group">
-                                        <label for="colorScheme">
-                                            <i class="fas fa-palette"></i> Color Scheme
-                                        </label>
-                                        <select id="colorScheme" class="form-control">
-                                            <option value="blue">Blue Theme</option>
-                                            <option value="purple">Purple Theme</option>
-                                            <option value="green">Green Theme</option>
-                                            <option value="dark">Dark Theme</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label>Features</label>
-                                    <div class="checkbox-grid">
-                                        <div class="checkbox-group">
-                                            <input type="checkbox" id="featureAuth" checked>
-                                            <label for="featureAuth">Authentication</label>
-                                        </div>
-                                        <div class="checkbox-group">
-                                            <input type="checkbox" id="featureDarkMode" checked>
-                                            <label for="featureDarkMode">Dark Mode</label>
-                                        </div>
-                                        <div class="checkbox-group">
-                                            <input type="checkbox" id="featureOffline" checked>
-                                            <label for="featureOffline">Offline Support</label>
-                                        </div>
-                                        <div class="checkbox-group">
-                                            <input type="checkbox" id="featureNotifications">
-                                            <label for="featureNotifications">Push Notifications</label>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <button class="btn btn-primary btn-lg btn-full" id="generateBtn">
-                                    <i class="fas fa-bolt"></i> Generate App with AI
-                                </button>
-                            </div>
-                            
-                            <!-- Manual Code Tab -->
-                            <div class="tab-content" id="manual-tab">
-                                <div class="form-group">
-                                    <label>
-                                        <i class="fas fa-code"></i> Paste Your Code (HTML/CSS/JS)
-                                    </label>
-                                    <div class="code-tabs">
-                                        <button class="code-tab-btn active" data-code="html">HTML</button>
-                                        <button class="code-tab-btn" data-code="css">CSS</button>
-                                        <button class="code-tab-btn" data-code="js">JavaScript</button>
-                                    </div>
-                                    
-                                    <div class="code-input-container">
-                                        <textarea id="htmlCode" class="code-input active" placeholder="Paste your HTML code here..."></textarea>
-                                        <textarea id="cssCode" class="code-input" placeholder="Paste your CSS code here..."></textarea>
-                                        <textarea id="jsCode" class="code-input" placeholder="Paste your JavaScript code here..."></textarea>
-                                    </div>
-                                    
-                                    <div class="code-actions">
-                                        <button class="btn btn-secondary" id="loadExampleBtn">
-                                            <i class="fas fa-code"></i> Load Example
-                                        </button>
-                                        <button class="btn btn-primary" id="previewCustomBtn">
-                                            <i class="fas fa-eye"></i> Preview Code
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Templates Tab -->
-                            <div class="tab-content" id="templates-tab">
-                                <div class="templates-grid">
-                                    <!-- Templates will be loaded dynamically -->
-                                </div>
-                                <button class="btn btn-outline btn-full" id="loadMoreTemplatesBtn">
-                                    <i class="fas fa-sync"></i> Load More Templates
-                                </button>
-                            </div>
+                        <textarea id="codeEditor" class="code-editor" placeholder="Start typing your HTML here...">
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My App</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 30px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+        p {
+            font-size: 1.2em;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to Your App</h1>
+        <p>This is a sample app created with AppForge. Edit this code to build your own amazing application!</p>
+        <button onclick="alert('Hello from AppForge!')" style="padding: 12px 24px; background: white; color: #667eea; border: none; border-radius: 10px; font-size: 1.1em; cursor: pointer; margin-top: 20px;">
+            Click Me
+        </button>
+    </div>
+    <script>
+        console.log('AppForge app loaded');
+    </script>
+</body>
+</html>
+                        </textarea>
+                        <div class="editor-stats">
+                            <span>Lines: <span id="lineCount">25</span></span>
+                            <span>Chars: <span id="charCount">1200</span></span>
                         </div>
                     </div>
                     
-                    <!-- Code Editor Section -->
-                    <div class="panel editor-panel">
-                        <div class="panel-header">
-                            <h2><i class="fas fa-edit"></i> Code Editor</h2>
-                            <div class="editor-actions">
-                                <button class="btn btn-sm btn-secondary" id="formatCodeBtn">
-                                    <i class="fas fa-align-left"></i> Format
-                                </button>
-                                <button class="btn btn-sm btn-secondary" id="minifyCodeBtn">
-                                    <i class="fas fa-compress"></i> Minify
-                                </button>
+                    <div class="preview-section">
+                        <div class="preview-header">
+                            <h3>Mobile Preview</h3>
+                            <div class="preview-options">
+                                <button class="size-btn active" data-size="mobile">📱 Mobile</button>
+                                <button class="size-btn" data-size="tablet">📟 Tablet</button>
+                                <button class="size-btn" data-size="desktop">🖥️ Desktop</button>
+                                <button id="refreshPreview" class="icon-btn">🔄</button>
                             </div>
                         </div>
-                        
-                        <div class="editor-container">
-                            <div class="editor-tabs">
-                                <button class="editor-tab active" data-editor="html">index.html</button>
-                                <button class="editor-tab" data-editor="css">style.css</button>
-                                <button class="editor-tab" data-editor="js">app.js</button>
-                            </div>
-                            
-                            <div class="editor-content">
-                                <div class="editor-wrapper">
-                                    <div class="line-numbers" id="lineNumbers">
-                                        1
-                                    </div>
-                                    <textarea id="codeEditor" class="code-editor" spellcheck="false"></textarea>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Right Panel: Preview & Export -->
-                <div class="right-panel">
-                    <!-- Preview Section -->
-                    <div class="panel preview-panel">
-                        <div class="panel-header">
-                            <h2><i class="fas fa-mobile-alt"></i> Live Preview</h2>
-                            <div class="preview-controls">
-                                <select id="deviceSelector" class="form-control-sm">
-                                    <option value="mobile">Mobile (375x667)</option>
-                                    <option value="tablet">Tablet (768x1024)</option>
-                                    <option value="desktop">Desktop</option>
-                                </select>
-                                <button class="btn btn-sm btn-secondary" id="refreshPreviewBtn">
-                                    <i class="fas fa-redo"></i>
-                                </button>
-                                <button class="btn btn-sm btn-secondary" id="fullscreenPreviewBtn">
-                                    <i class="fas fa-expand"></i>
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <div class="preview-container">
-                            <div class="device-frame" data-device="mobile">
-                                <div class="device-header">
+                        <div class="preview-frame-container">
+                            <div class="device-frame">
+                                <div class="device-top-bar">
                                     <div class="device-notch"></div>
-                                    <div class="device-time">12:30</div>
-                                    <div class="device-icons">
-                                        <i class="fas fa-signal"></i>
-                                        <i class="fas fa-wifi"></i>
-                                        <i class="fas fa-battery-full"></i>
-                                    </div>
                                 </div>
                                 <iframe id="previewFrame" class="preview-frame"></iframe>
-                                <div class="device-footer">
-                                    <div class="device-home"></div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="preview-stats">
-                            <div class="stat">
-                                <i class="fas fa-file-code"></i>
-                                <span id="lineCount">0 lines</span>
-                            </div>
-                            <div class="stat">
-                                <i class="fas fa-weight-hanging"></i>
-                                <span id="fileSize">0 KB</span>
-                            </div>
-                            <div class="stat">
-                                <i class="fas fa-bolt"></i>
-                                <span id="loadTime">0ms</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Export Section -->
-                    <div class="panel export-panel">
-                        <div class="panel-header">
-                            <h2><i class="fas fa-download"></i> Export App</h2>
-                            <p>Convert your web app to native formats</p>
-                        </div>
-                        
-                        <div class="export-options">
-                            <div class="export-option">
-                                <div class="export-icon">
-                                    <i class="fas fa-file-code"></i>
-                                </div>
-                                <div class="export-info">
-                                    <h3>HTML Package</h3>
-                                    <p>Complete web app with all files</p>
-                                </div>
-                                <button class="btn btn-outline" id="exportHtmlBtn">
-                                    Download ZIP
-                                </button>
-                            </div>
-                            
-                            <div class="export-option">
-                                <div class="export-icon">
-                                    <i class="fas fa-mobile-alt"></i>
-                                </div>
-                                <div class="export-info">
-                                    <h3>PWA (Progressive Web App)</h3>
-                                    <p>Installable on mobile & desktop</p>
-                                </div>
-                                <button class="btn btn-outline" id="exportPwaBtn">
-                                    Build PWA
-                                </button>
-                            </div>
-                            
-                            <div class="export-option">
-                                <div class="export-icon">
-                                    <i class="fab fa-android"></i>
-                                </div>
-                                <div class="export-info">
-                                    <h3>Android APK</h3>
-                                    <p>Native Android application</p>
-                                </div>
-                                <button class="btn btn-primary" id="exportApkBtn">
-                                    Build APK
-                                </button>
-                            </div>
-                            
-                            <div class="export-option">
-                                <div class="export-icon">
-                                    <i class="fab fa-apple"></i>
-                                </div>
-                                <div class="export-info">
-                                    <h3>iOS App</h3>
-                                    <p>Native iOS application (.ipa)</p>
-                                </div>
-                                <button class="btn btn-secondary" disabled>
-                                    Coming Soon
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <!-- APK Builder Section (Initially Hidden) -->
-                        <div class="apk-builder hidden" id="apkBuilder">
-                            <div class="apk-header">
-                                <h3><i class="fab fa-android"></i> APK Configuration</h3>
-                                <button class="btn btn-sm btn-secondary" id="closeApkBuilderBtn">
-                                    <i class="fas fa-times"></i>
-                                </button>
-                            </div>
-                            
-                            <div class="apk-form">
-                                <div class="form-group">
-                                    <label for="apkPackageName">Package Name</label>
-                                    <input type="text" id="apkPackageName" class="form-control" 
-                                           placeholder="com.company.appname" value="com.appforge.generated">
-                                </div>
-                                
-                                <div class="form-row">
-                                    <div class="form-group">
-                                        <label for="apkVersionName">Version Name</label>
-                                        <input type="text" id="apkVersionName" class="form-control" 
-                                               placeholder="1.0.0" value="1.0.0">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="apkVersionCode">Version Code</label>
-                                        <input type="number" id="apkVersionCode" class="form-control" 
-                                               placeholder="1" value="1">
-                                    </div>
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label>Permissions</label>
-                                    <div class="checkbox-grid">
-                                        <div class="checkbox-group">
-                                            <input type="checkbox" id="permInternet" checked>
-                                            <label for="permInternet">Internet</label>
-                                        </div>
-                                        <div class="checkbox-group">
-                                            <input type="checkbox" id="permStorage">
-                                            <label for="permStorage">Storage</label>
-                                        </div>
-                                        <div class="checkbox-group">
-                                            <input type="checkbox" id="permCamera">
-                                            <label for="permCamera">Camera</label>
-                                        </div>
-                                        <div class="checkbox-group">
-                                            <input type="checkbox" id="permLocation">
-                                            <label for="permLocation">Location</label>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="apk-actions">
-                                    <button class="btn btn-secondary" id="cancelApkBtn">
-                                        Cancel
-                                    </button>
-                                    <button class="btn btn-primary" id="buildApkBtn">
-                                        <i class="fas fa-hammer"></i> Build APK
-                                    </button>
+                                <div class="device-bottom-bar">
+                                    <div class="home-indicator"></div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </main>
 
-    <!-- Footer -->
-    <footer>
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-brand">
-                    <img src="assets/images/logo.png" alt="AppForge AI" class="footer-logo">
-                    <p class="footer-tagline">From Imagination to Installation</p>
-                    <p class="copyright">&copy; 2024 AppForge AI. All rights reserved.</p>
-                </div>
-                
-                <div class="footer-links">
-                    <div class="footer-section">
-                        <h3>Product</h3>
-                        <ul>
-                            <li><a href="#">Features</a></li>
-                            <li><a href="#">Templates</a></li>
-                            <li><a href="#">Pricing</a></li>
-                            <li><a href="#">API</a></li>
-                        </ul>
-                    </div>
-                    
-                    <div class="footer-section">
-                        <h3>Resources</h3>
-                        <ul>
-                            <li><a href="#">Documentation</a></li>
-                            <li><a href="#">Tutorials</a></li>
-                            <li><a href="#">Blog</a></li>
-                            <li><a href="#">Community</a></li>
-                        </ul>
-                    </div>
-                    
-                    <div class="footer-section">
-                        <h3>Company</h3>
-                        <ul>
-                            <li><a href="#">About</a></li>
-                            <li><a href="#">Contact</a></li>
-                            <li><a href="#">Privacy</a></li>
-                            <li><a href="#">Terms</a></li>
-                        </ul>
+            <!-- Templates Tab -->
+            <div id="templatesTab" class="tab-content">
+                <div class="templates-container">
+                    <h2>Choose a Template</h2>
+                    <div class="template-grid" id="templateGrid">
+                        <!-- Templates will be loaded here -->
                     </div>
                 </div>
             </div>
-            
-            <div class="footer-bottom">
-                <div class="social-links">
-                    <a href="#" class="social-link"><i class="fab fa-github"></i></a>
-                    <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
-                    <a href="#" class="social-link"><i class="fab fa-discord"></i></a>
-                    <a href="#" class="social-link"><i class="fab fa-youtube"></i></a>
-                </div>
-                <p class="footer-note">
-                    Powered by Deep-Seek Technology | Built with ❤️ by Pierre
-                </p>
-            </div>
-        </div>
-    </footer>
 
-    <!-- Modals -->
-    <div class="modal" id="aiSystemModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2><i class="fas fa-robot"></i> AI System Prompt</h2>
-                <button class="modal-close" id="closeAiModalBtn">
-                    <i class="fas fa-times"></i>
-                </button>
+            <!-- AI Generator Tab -->
+            <div id="aiGeneratorTab" class="tab-content">
+                <div class="ai-generator-container">
+                    <h2>AI App Generator</h2>
+                    <div class="ai-input-section">
+                        <textarea id="aiPrompt" class="ai-prompt-input" placeholder="Describe the app you want to build... 
+Example: 'A task manager app with dark theme, drag and drop tasks, and notifications'"></textarea>
+                        <div class="ai-options">
+                            <select id="aiProvider">
+                                <option value="puter">Grok AI (Free - No API Key)</option>
+                                <option value="openai">OpenAI GPT-4 (API Key Required)</option>
+                                <option value="claude">Claude 3 (API Key Required)</option>
+                                <option value="gemini">Google Gemini (API Key Required)</option>
+                            </select>
+                            <input type="password" id="apiKeyInput" placeholder="API Key (if required)" style="display: none;">
+                            <button id="generateAppBtn" class="btn btn-primary btn-large">✨ Generate App</button>
+                        </div>
+                    </div>
+                    <div class="ai-result-section">
+                        <div class="loading-ai" style="display: none;">
+                            <div class="ai-thinking">🤔 AI is thinking...</div>
+                            <div class="ai-progress"></div>
+                        </div>
+                        <div id="aiResult" class="ai-result"></div>
+                    </div>
+                </div>
             </div>
-            <div class="modal-body">
-                <pre id="systemPromptText"></pre>
+
+            <!-- Export Tab -->
+            <div id="exportTab" class="tab-content">
+                <div class="export-container">
+                    <h2>Export Your App</h2>
+                    <div class="export-options">
+                        <div class="export-card" data-export="html">
+                            <div class="export-icon">📄</div>
+                            <h3>HTML Export</h3>
+                            <p>Download as HTML file</p>
+                            <button class="btn btn-outline export-btn">Download HTML</button>
+                        </div>
+                        <div class="export-card" data-export="pwa">
+                            <div class="export-icon">📱</div>
+                            <h3>PWA Package</h3>
+                            <p>Progressive Web App with manifest</p>
+                            <button class="btn btn-outline export-btn">Create PWA</button>
+                        </div>
+                        <div class="export-card" data-export="apk">
+                            <div class="export-icon">🤖</div>
+                            <h3>Android APK</h3>
+                            <p>Convert to Android app (Pro Feature)</p>
+                            <button class="btn btn-primary export-btn">Build APK ($4.99)</button>
+                        </div>
+                        <div class="export-card" data-export="ios">
+                            <div class="export-icon">🍎</div>
+                            <h3>iOS App</h3>
+                            <p>Export for iOS (Coming Soon)</p>
+                            <button class="btn btn-outline" disabled>Coming Soon</button>
+                        </div>
+                    </div>
+                    <div class="license-info">
+                        <h3>License & Copyright</h3>
+                        <p>All apps created with AppForge include our copyright protection system. Upgrade to Pro to remove branding.</p>
+                        <div class="license-status">
+                            <span>Status: <strong>Free Tier</strong></span>
+                            <span>Exports remaining: <strong>3/3</strong></span>
+                            <button id="upgradeLicenseBtn" class="btn btn-primary">Upgrade to Pro</button>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" id="copyPromptBtn">
-                    <i class="fas fa-copy"></i> Copy Prompt
-                </button>
-                <button class="btn btn-primary" id="applyPromptBtn">
-                    <i class="fas fa-check"></i> Apply to Settings
-                </button>
+
+            <!-- Account Tab -->
+            <div id="accountTab" class="tab-content">
+                <div class="account-container">
+                    <h2>Your Account</h2>
+                    <div class="account-info">
+                        <div class="account-card">
+                            <h3>Usage Statistics</h3>
+                            <div class="stats-grid">
+                                <div class="stat-item">
+                                    <span class="stat-label">Apps Created</span>
+                                    <span class="stat-value" id="appsCreated">0</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">AI Generations</span>
+                                    <span class="stat-value" id="aiGenerations">0</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">PWA Exports</span>
+                                    <span class="stat-value" id="pwaExports">0</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">APK Builds</span>
+                                    <span class="stat-value" id="apkBuilds">0</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="account-card">
+                            <h3>Subscription</h3>
+                            <div class="subscription-info">
+                                <div class="plan-badge free">Free Plan</div>
+                                <p>Upgrade to unlock unlimited exports and APK building</p>
+                                <button id="upgradeAccountBtn" class="btn btn-primary">Upgrade to Pro - $19/month</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
+        </main>
+
+        <!-- Toast Notifications -->
+        <div id="toastContainer" class="toast-container"></div>
+
+        <!-- Modals -->
+        <div id="modalContainer" class="modal-container"></div>
     </div>
-
-    <div class="modal" id="apkBuildModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2><i class="fab fa-android"></i> Building APK</h2>
-            </div>
-            <div class="modal-body">
-                <div class="build-progress">
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="apkProgress"></div>
-                    </div>
-                    <div class="build-steps" id="buildSteps">
-                        <!-- Steps will be added here -->
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" id="cancelBuildBtn" style="display: none;">
-                    Cancel Build
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Toast Container -->
-    <div class="toast-container" id="toastContainer"></div>
 
     <!-- JavaScript Files -->
     <script src="js/utils.js"></script>
     <script src="js/ui-manager.js"></script>
     <script src="js/code-editor.js"></script>
     <script src="js/preview-manager.js"></script>
+    <script src="js/template-manager.js"></script>
     <script src="js/ai-engine.js"></script>
     <script src="js/apk-builder.js"></script>
-    <script src="js/template-manager.js"></script>
+    <script src="js/license-manager.js"></script>
+    <script src="js/user-manager.js"></script>
     <script src="js/app.js"></script>
+    
+    <!-- PWA Service Worker -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('service-worker.js')
+                .then(() => console.log('Service Worker Registered'))
+                .catch(err => console.log('Service Worker Registration Failed:', err));
+        }
+    </script>
 </body>
 </html>
