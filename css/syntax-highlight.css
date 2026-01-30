@@ -1,0 +1,130 @@
+/* ===== SYNTAX HIGHLIGHTING ===== */
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+    color: #6a737d;
+    font-style: italic;
+}
+
+.token.punctuation {
+    color: #24292e;
+}
+
+.token.namespace {
+    opacity: 0.7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+    color: #005cc5;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+    color: #032f62;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+    color: #d73a49;
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+    color: #d73a49;
+    font-weight: bold;
+}
+
+.token.function,
+.token.class-name {
+    color: #6f42c1;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+    color: #e36209;
+}
+
+.token.important,
+.token.bold {
+    font-weight: bold;
+}
+
+.token.italic {
+    font-style: italic;
+}
+
+.token.entity {
+    cursor: help;
+}
+
+/* Dark theme syntax highlighting */
+.dark-theme .token.comment,
+.dark-theme .token.prolog,
+.dark-theme .token.doctype,
+.dark-theme .token.cdata {
+    color: #8b949e;
+}
+
+.dark-theme .token.punctuation {
+    color: #c9d1d9;
+}
+
+.dark-theme .token.property,
+.dark-theme .token.tag,
+.dark-theme .token.boolean,
+.dark-theme .token.number,
+.dark-theme .token.constant,
+.dark-theme .token.symbol,
+.dark-theme .token.deleted {
+    color: #79c0ff;
+}
+
+.dark-theme .token.selector,
+.dark-theme .token.attr-name,
+.dark-theme .token.string,
+.dark-theme .token.char,
+.dark-theme .token.builtin,
+.dark-theme .token.inserted {
+    color: #a5d6ff;
+}
+
+.dark-theme .token.operator,
+.dark-theme .token.entity,
+.dark-theme .token.url,
+.dark-theme .language-css .token.string,
+.dark-theme .style .token.string {
+    color: #ff7b72;
+}
+
+.dark-theme .token.atrule,
+.dark-theme .token.attr-value,
+.dark-theme .token.keyword {
+    color: #ff7b72;
+}
+
+.dark-theme .token.function,
+.dark-theme .token.class-name {
+    color: #d2a8ff;
+}
+
+.dark-theme .token.regex,
+.dark-theme .token.important,
+.dark-theme .token.variable {
+    color: #ffa657;
+}

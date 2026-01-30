@@ -1,0 +1,203 @@
+/* ===== APK BUILDER STYLES ===== */
+.apk-builder {
+    background-color: var(--gray-50);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--gray-200);
+    margin-top: var(--spacing-lg);
+    overflow: hidden;
+}
+
+.apk-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-lg);
+    background: linear-gradient(135deg, var(--success), var(--primary));
+    color: white;
+}
+
+.apk-header h3 {
+    margin: 0;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.apk-form {
+    padding: var(--spacing-lg);
+}
+
+.apk-actions {
+    display: flex;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-xl);
+    justify-content: flex-end;
+}
+
+/* Build Progress Modal */
+.build-progress {
+    text-align: center;
+}
+
+.progress-bar {
+    height: 12px;
+    background-color: var(--gray-200);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+    margin-bottom: var(--spacing-xl);
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary), var(--success));
+    border-radius: var(--radius-full);
+    transition: width 0.3s ease;
+    width: 0%;
+}
+
+.build-steps {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.build-step {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md);
+    background-color: var(--gray-50);
+    border-radius: var(--radius-md);
+    transition: all var(--transition-fast);
+}
+
+.build-step.completed {
+    background-color: rgba(76, 201, 240, 0.1);
+    border-left: 4px solid var(--success);
+}
+
+.build-step.active {
+    background-color: rgba(67, 97, 238, 0.1);
+    border-left: 4px solid var(--primary);
+}
+
+.step-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.875rem;
+}
+
+.build-step.completed .step-icon {
+    background-color: var(--success);
+    color: white;
+}
+
+.build-step.active .step-icon {
+    background-color: var(--primary);
+    color: white;
+}
+
+.step-info {
+    flex: 1;
+    text-align: left;
+}
+
+.step-info h4 {
+    margin: 0 0 var(--spacing-xs);
+    font-size: 1rem;
+}
+
+.step-info p {
+    margin: 0;
+    color: var(--gray-600);
+    font-size: 0.875rem;
+}
+
+.step-status {
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+.build-step.completed .step-status {
+    color: var(--success);
+}
+
+.build-step.active .step-status {
+    color: var(--primary);
+}
+
+/* APK Output */
+.apk-output {
+    padding: var(--spacing-lg);
+    background-color: var(--gray-50);
+    border-radius: var(--radius-lg);
+    border: 2px dashed var(--gray-300);
+    text-align: center;
+    margin-top: var(--spacing-lg);
+}
+
+.apk-output.success {
+    border-color: var(--success);
+    background-color: rgba(76, 201, 240, 0.05);
+}
+
+.apk-file-info {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: var(--spacing-md);
+    margin: var(--spacing-lg) 0;
+}
+
+.apk-file-stat {
+    text-align: center;
+    padding: var(--spacing-md);
+    background-color: white;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--gray-200);
+}
+
+.apk-file-stat .value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary);
+    display: block;
+    margin-bottom: var(--spacing-xs);
+}
+
+.apk-file-stat .label {
+    font-size: 0.875rem;
+    color: var(--gray-600);
+}
+
+.apk-actions-row {
+    display: flex;
+    gap: var(--spacing-md);
+    justify-content: center;
+    margin-top: var(--spacing-lg);
+}
+
+/* QR Code for APK Sharing */
+.qr-container {
+    display: inline-block;
+    padding: var(--spacing-md);
+    background-color: white;
+    border-radius: var(--radius-md);
+    margin: var(--spacing-lg) 0;
+}
+
+.qr-placeholder {
+    width: 150px;
+    height: 150px;
+    background: linear-gradient(45deg, var(--primary-light), var(--primary));
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.5rem;
+}
