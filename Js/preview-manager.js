@@ -1,442 +1,742 @@
-// ===== PREVIEW MANAGER =====
-// Handles live preview functionality
+// Preview Manager for AppForge
 
 class PreviewManager {
     constructor() {
-        this.previewFrame = document.getElementById('previewFrame');
-        this.deviceSelector = document.getElementById('deviceSelector');
-        this.refreshPreviewBtn = document.getElementById('refreshPreviewBtn');
-        this.fullscreenPreviewBtn = document.getElementById('fullscreenPreviewBtn');
-        this.deviceFrame = document.querySelector('.device-frame');
-        
-        this.currentContent = '';
-        this.isFullscreen = false;
-        
+        this.utils = window.utils;
+        this.uiManager = window.uiManager;
+        this.previewFrame = null;
+        this.currentSize = 'mobile';
+        this.isRefreshing = false;
         this.init();
     }
-    
+
     init() {
+        this.setupPreview();
+        this.setupEventListeners();
+        this.setupResizeHandler();
+    }
+
+    setupPreview() {
+        this.previewFrame = document.getElementById('previewFrame');
         if (!this.previewFrame) {
-            console.warn('Preview frame not found');
+            console.error('Preview frame not found');
             return;
         }
-        
-        this.setupEventListeners();
-        this.updatePreviewStats();
-        
-        console.log('Preview manager initialized');
+
+        // Set initial size
+        this.setSize(this.currentSize);
     }
-    
+
     setupEventListeners() {
-        // Device selector
-        if (this.deviceSelector) {
-            this.deviceSelector.addEventListener('change', (e) => {
-                this.setDeviceSize(e.target.value);
+        // Size buttons
+        const sizeButtons = document.querySelectorAll('.size-btn');
+        sizeButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const size = button.dataset.size;
+                this.setSize(size);
+                
+                // Update active button
+                sizeButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                
+                this.utils.trackEvent('preview_size_changed', { size });
             });
+        });
+
+        // Refresh button
+        const refreshBtn = document.getElementById('refreshPreview');
+        if (refreshBtn) {
+            refreshBtn.addEventListener('click', () => this.refresh());
         }
-        
-        // Refresh preview
-        if (this.refreshPreviewBtn) {
-            this.refreshPreviewBtn.addEventListener('click', () => {
-                this.refreshPreview();
-            });
-        }
-        
-        // Fullscreen preview
-        if (this.fullscreenPreviewBtn) {
-            this.fullscreenPreviewBtn.addEventListener('click', () => {
-                this.toggleFullscreen();
-            });
-        }
-        
-        // Auto-refresh on code changes
-        const codeEditor = document.getElementById('codeEditor');
-        if (codeEditor) {
-            codeEditor.addEventListener('input', debounce(() => {
-                if (window.AppState.userSettings.autoPreview) {
-                    this.updatePreview();
-                }
-            }, 1000));
-        }
-    }
-    
-    setDeviceSize(device) {
-        if (!this.deviceFrame) return;
-        
-        const sizes = {
-            mobile: { width: '375px', height: '667px' },
-            tablet: { width: '768px', height: '1024px' },
-            desktop: { width: '100%', height: '600px' }
-        };
-        
-        const size = sizes[device] || sizes.mobile;
-        
-        this.deviceFrame.style.width = size.width;
-        this.deviceFrame.style.height = size.height;
-        this.deviceFrame.setAttribute('data-device', device);
-        
-        // Update preview frame size
-        if (this.previewFrame) {
-            this.previewFrame.style.height = device === 'desktop' 
-                ? '100%' 
-                : `calc(100% - ${device === 'mobile' ? '80px' : '60px'})`;
-        }
-        
-        showToast(`Switched to ${device} view`, 'info');
-    }
-    
-    updatePreview(content = null) {
-        if (!this.previewFrame) return;
-        
-        // Use provided content or get from editor
-        if (content) {
-            this.currentContent = content;
-        } else {
-            this.currentContent = this.getCombinedCode();
-        }
-        
-        // Create complete HTML document for preview
-        const previewDoc = this.createPreviewDocument(this.currentContent);
-        
-        // Update iframe
-        this.previewFrame.srcdoc = previewDoc;
-        
-        // Update stats
-        this.updatePreviewStats();
-        
-        console.log('Preview updated');
-    }
-    
-    getCombinedCode() {
-        // Get code from current editor or combine from all sources
-        const editorType = window.AppState.currentEditor;
-        const editorContent = document.getElementById('codeEditor')?.value || '';
-        
-        // If we're in manual mode, combine HTML/CSS/JS
-        if (window.AppState.currentTab === 'manual') {
-            const html = document.getElementById('htmlCode')?.value || '';
-            const css = document.getElementById('cssCode')?.value || '';
-            const js = document.getElementById('jsCode')?.value || '';
-            
-            return this.createCompleteHTML(html, css, js);
-        }
-        
-        // Otherwise use editor content as complete HTML
-        return editorContent;
-    }
-    
-    createCompleteHTML(html, css, js) {
-        return `<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AppForge Preview</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
-        ${css}
-    </style>
-</head>
-<body>
-    ${html}
-    <script>
-        // Prevent navigation
-        document.addEventListener('click', (e) => {
-            if (e.target.tagName === 'A') {
+
+        // Auto-refresh on code change
+        document.addEventListener('codeUpdated', () => {
+            this.debouncedRefresh();
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'r') {
                 e.preventDefault();
-                console.log('Link clicked:', e.target.href);
+                this.refresh();
             }
         });
-        
-        // Handle form submissions
-        document.addEventListener('submit', (e) => {
-            e.preventDefault();
-            console.log('Form submitted');
-            alert('Form submission handled in preview mode');
-        });
-        
-        ${js}
-    </script>
-</body>
-</html>`;
     }
-    
-    createPreviewDocument(content) {
-        return `<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <base target="_blank">
-    <style>
-        body { 
-            margin: 0; 
-            padding: 20px; 
-            background: #f5f5f5;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-        }
+
+    setupResizeHandler() {
+        let resizeTimeout;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                this.handleResize();
+            }, 250);
+        });
+    }
+
+    setSize(size) {
+        this.currentSize = size;
+        const deviceFrame = document.querySelector('.device-frame');
         
-        .preview-notice {
-            background: linear-gradient(135deg, #4361ee, #7209b7);
-            color: white;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            font-size: 14px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-        
-        .preview-notice strong {
-            display: block;
-            margin-bottom: 5px;
-            font-size: 16px;
-        }
-        
-        /* Disable external links in preview */
-        a[href^="http"]:not([href*="localhost"]) {
-            opacity: 0.7;
-            pointer-events: none;
-            text-decoration: line-through;
-        }
-        
-        /* Style forms for preview */
-        input, button, textarea, select {
-            font-family: inherit;
-            font-size: inherit;
-        }
-        
-        /* Add some basic styles if none provided */
-        :not(style):not(link):not(meta):not(title) {
-            min-height: 1px;
-        }
-    </style>
-</head>
-<body>
-    <div class="preview-notice">
-        <strong>AppForge Live Preview</strong>
-        Interactive preview of your generated application. Forms and links are simulated.
-    </div>
-    ${content}
-    
-    <script>
-        // Enhanced preview script
-        (function() {
-            // Log all console messages to parent
-            const originalLog = console.log;
-            const originalError = console.error;
-            const originalWarn = console.warn;
-            
-            console.log = function(...args) {
-                originalLog.apply(console, args);
-                window.parent.postMessage({ 
-                    type: 'console', 
-                    level: 'log', 
-                    args: args.map(arg => 
-                        typeof arg === 'object' ? JSON.stringify(arg) : String(arg)
-                    )
-                }, '*');
-            };
-            
-            console.error = function(...args) {
-                originalError.apply(console, args);
-                window.parent.postMessage({ 
-                    type: 'console', 
-                    level: 'error', 
-                    args: args.map(String)
-                }, '*');
-            };
-            
-            console.warn = function(...args) {
-                originalWarn.apply(console, args);
-                window.parent.postMessage({ 
-                    type: 'console', 
-                    level: 'warn', 
-                    args: args.map(String)
-                }, '*');
-            };
-            
-            // Handle form submissions
-            document.addEventListener('submit', function(e) {
-                e.preventDefault();
-                const form = e.target;
-                const formData = new FormData(form);
-                const data = Object.fromEntries(formData.entries());
+        if (!deviceFrame) return;
+
+        switch (size) {
+            case 'mobile':
+                deviceFrame.style.width = '375px';
+                deviceFrame.style.height = '667px';
+                deviceFrame.style.transform = 'scale(1)';
+                break;
                 
-                console.log('Form submitted:', data);
+            case 'tablet':
+                deviceFrame.style.width = '768px';
+                deviceFrame.style.height = '1024px';
+                deviceFrame.style.transform = 'scale(0.7)';
+                break;
                 
-                // Show success message
-                alert('Form submitted successfully!\\n\\nIn preview mode, forms are simulated.');
-                
-                // Reset form
-                form.reset();
-            });
+            case 'desktop':
+                deviceFrame.style.width = '1024px';
+                deviceFrame.style.height = '768px';
+                deviceFrame.style.transform = 'scale(0.8)';
+                break;
+        }
+
+        this.updateSizeIndicator();
+        this.utils.trackEvent('preview_size_set', { size });
+    }
+
+    updateSizeIndicator() {
+        const indicator = document.querySelector('.size-indicator');
+        if (!indicator) return;
+
+        const sizes = {
+            mobile: '📱 Mobile (375x667)',
+            tablet: '📟 Tablet (768x1024)',
+            desktop: '🖥️ Desktop (1024x768)'
+        };
+
+        indicator.textContent = sizes[this.currentSize] || sizes.mobile;
+    }
+
+    handleResize() {
+        // Adjust scale based on container size
+        const container = document.querySelector('.preview-frame-container');
+        if (!container) return;
+
+        const containerWidth = container.clientWidth;
+        const deviceFrame = document.querySelector('.device-frame');
+        
+        if (!deviceFrame) return;
+
+        const deviceWidth = parseInt(deviceFrame.style.width) || 375;
+        const maxScale = containerWidth / deviceWidth;
+        const currentScale = parseFloat(deviceFrame.style.transform.replace('scale(', '').replace(')', '')) || 1;
+
+        // Don't scale beyond original size
+        if (currentScale > 1 && maxScale < 1) {
+            deviceFrame.style.transform = `scale(${Math.min(maxScale, 1)})`;
+        }
+    }
+
+    refresh() {
+        if (this.isRefreshing) return;
+
+        this.isRefreshing = true;
+        const refreshBtn = document.getElementById('refreshPreview');
+        
+        if (refreshBtn) {
+            refreshBtn.textContent = '⏳';
+            refreshBtn.disabled = true;
+        }
+
+        // Get current code from editor
+        const code = window.codeEditor ? window.codeEditor.getCode() : '';
+        
+        // Update preview
+        this.updatePreview(code);
+
+        // Show loading animation
+        this.showLoading();
+
+        setTimeout(() => {
+            this.isRefreshing = false;
             
-            // Handle link clicks
-            document.addEventListener('click', function(e) {
-                if (e.target.tagName === 'A') {
-                    e.preventDefault();
-                    const href = e.target.getAttribute('href');
+            if (refreshBtn) {
+                refreshBtn.textContent = '🔄';
+                refreshBtn.disabled = false;
+            }
+            
+            this.hideLoading();
+            this.uiManager.showToast('Preview refreshed', 'success');
+            this.utils.trackEvent('preview_refreshed');
+        }, 500);
+    }
+
+    debouncedRefresh = this.utils.debounce(() => {
+        this.refresh();
+    }, 1000);
+
+    updatePreview(code) {
+        if (!this.previewFrame) return;
+
+        try {
+            // Create a complete HTML document
+            const html = this.createPreviewHTML(code);
+            
+            // Write to iframe
+            this.previewFrame.srcdoc = html;
+            
+            // Wait for iframe to load
+            this.previewFrame.onload = () => {
+                this.injectPreviewHelpers();
+                this.setupPreviewInteractions();
+            };
+        } catch (error) {
+            console.error('Preview update error:', error);
+            this.uiManager.showToast('Preview update failed', 'error');
+        }
+    }
+
+    createPreviewHTML(code) {
+        return `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <style>
+                    /* Reset and base styles */
+                    * {
+                        margin: 0;
+                        padding: 0;
+                        box-sizing: border-box;
+                    }
                     
-                    if (href && href !== '#') {
-                        console.log('Link clicked:', href);
-                        
-                        if (href.startsWith('http')) {
-                            alert('External links are disabled in preview mode.\\n\\nLink: ' + href);
-                        } else {
-                            // Try to navigate internally
-                            const target = document.querySelector(href);
-                            if (target) {
-                                target.scrollIntoView({ behavior: 'smooth' });
-                            }
+                    body {
+                        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+                        line-height: 1.6;
+                        color: #333;
+                        background-color: #fff;
+                        min-height: 100vh;
+                        overflow-x: hidden;
+                    }
+                    
+                    /* AppForge preview styles */
+                    .appforge-preview-marker {
+                        position: fixed;
+                        bottom: 10px;
+                        right: 10px;
+                        background: rgba(0,0,0,0.1);
+                        padding: 5px 10px;
+                        border-radius: 4px;
+                        font-size: 12px;
+                        color: #666;
+                        z-index: 9999;
+                        pointer-events: none;
+                    }
+                    
+                    /* Responsive helper */
+                    .preview-helper {
+                        display: none;
+                        position: fixed;
+                        top: 10px;
+                        left: 10px;
+                        background: rgba(0,0,0,0.8);
+                        color: white;
+                        padding: 5px 10px;
+                        border-radius: 4px;
+                        font-size: 12px;
+                        z-index: 9998;
+                    }
+                    
+                    @media (max-width: 768px) {
+                        .preview-helper::after {
+                            content: '📱 Mobile View';
                         }
                     }
+                    
+                    @media (min-width: 769px) and (max-width: 1024px) {
+                        .preview-helper::after {
+                            content: '📟 Tablet View';
+                        }
+                    }
+                    
+                    @media (min-width: 1025px) {
+                        .preview-helper::after {
+                            content: '🖥️ Desktop View';
+                        }
+                    }
+                    
+                    /* Error boundary */
+                    .error-boundary {
+                        display: none;
+                        position: fixed;
+                        top: 50%;
+                        left: 50%;
+                        transform: translate(-50%, -50%);
+                        background: #fee;
+                        border: 2px solid #fcc;
+                        border-radius: 8px;
+                        padding: 20px;
+                        max-width: 90%;
+                        z-index: 10000;
+                    }
+                    
+                    .error-boundary.show {
+                        display: block;
+                    }
+                    
+                    .error-title {
+                        color: #c00;
+                        margin-bottom: 10px;
+                        font-weight: bold;
+                    }
+                    
+                    .error-message {
+                        color: #666;
+                        font-family: monospace;
+                        font-size: 14px;
+                        margin-bottom: 15px;
+                        white-space: pre-wrap;
+                        word-break: break-word;
+                    }
+                    
+                    .error-retry {
+                        background: #c00;
+                        color: white;
+                        border: none;
+                        padding: 8px 16px;
+                        border-radius: 4px;
+                        cursor: pointer;
+                    }
+                </style>
+                
+                <script>
+                    // Error handling for preview
+                    window.addEventListener('error', function(e) {
+                        const errorBoundary = document.getElementById('appforge-error-boundary');
+                        if (errorBoundary) {
+                            errorBoundary.querySelector('.error-message').textContent = e.message + '\\n' + e.filename + ':' + e.lineno;
+                            errorBoundary.classList.add('show');
+                        }
+                    });
+                    
+                    window.addEventListener('unhandledrejection', function(e) {
+                        const errorBoundary = document.getElementById('appforge-error-boundary');
+                        if (errorBoundary) {
+                            errorBoundary.querySelector('.error-message').textContent = e.reason?.message || 'Promise rejected';
+                            errorBoundary.classList.add('show');
+                        }
+                    });
+                    
+                    // Prevent navigation
+                    document.addEventListener('click', function(e) {
+                        if (e.target.tagName === 'A' && e.target.href) {
+                            e.preventDefault();
+                            console.log('Link clicked (prevented in preview):', e.target.href);
+                        }
+                    });
+                </script>
+            </head>
+            <body>
+                <!-- Error boundary -->
+                <div id="appforge-error-boundary" class="error-boundary">
+                    <div class="error-title">⚠️ Preview Error</div>
+                    <div class="error-message"></div>
+                    <button class="error-retry" onclick="location.reload()">Retry</button>
+                </div>
+                
+                <!-- Preview content -->
+                ${code}
+                
+                <!-- Preview helper -->
+                <div class="preview-helper"></div>
+                
+                <!-- AppForge marker -->
+                <div class="appforge-preview-marker">Preview - AppForge</div>
+            </body>
+            </html>
+        `;
+    }
+
+    injectPreviewHelpers() {
+        if (!this.previewFrame.contentWindow) return;
+
+        try {
+            const iframeWindow = this.previewFrame.contentWindow;
+            const iframeDocument = iframeWindow.document;
+
+            // Add interactive debugging
+            iframeDocument.addEventListener('click', (e) => {
+                if (e.target.tagName === 'A' && e.target.href) {
+                    e.preventDefault();
+                    console.log('🔗 Link clicked (preview):', e.target.href);
+                    
+                    // Show notification
+                    const notification = iframeDocument.createElement('div');
+                    notification.style.cssText = `
+                        position: fixed;
+                        top: 20px;
+                        right: 20px;
+                        background: rgba(0,0,0,0.8);
+                        color: white;
+                        padding: 10px 20px;
+                        border-radius: 5px;
+                        z-index: 10000;
+                        animation: fadeInOut 3s ease;
+                    `;
+                    notification.textContent = `Link: ${e.target.href}`;
+                    iframeDocument.body.appendChild(notification);
+                    
+                    setTimeout(() => notification.remove(), 3000);
                 }
             });
-            
-            // Add loading state to buttons
-            document.addEventListener('click', function(e) {
-                if (e.target.tagName === 'BUTTON' && !e.target.hasAttribute('data-preview-processed')) {
-                    const button = e.target;
-                    const originalText = button.textContent;
-                    
-                    button.setAttribute('data-preview-processed', 'true');
-                    button.textContent = 'Processing...';
-                    button.disabled = true;
-                    
-                    setTimeout(() => {
-                        button.textContent = originalText;
-                        button.disabled = false;
-                        button.removeAttribute('data-preview-processed');
-                        alert('Button action completed in preview mode');
-                    }, 1000);
-                }
+
+            // Add element inspector
+            iframeDocument.addEventListener('mouseover', (e) => {
+                if (e.target === iframeDocument.body) return;
+                
+                e.target.style.outline = '2px solid #FF3366';
+                e.target.style.outlineOffset = '2px';
             });
-            
-            // Initialize any components that need it
-            document.dispatchEvent(new Event('DOMContentLoaded'));
-            
-            console.log('Preview environment initialized');
-        })();
-    </script>
-</body>
-</html>`;
-    }
-    
-    refreshPreview() {
-        this.updatePreview();
-        showToast('Preview refreshed!', 'info');
-    }
-    
-    toggleFullscreen() {
-        if (!this.previewFrame) return;
-        
-        const previewContainer = this.previewFrame.closest('.preview-container');
-        
-        if (!this.isFullscreen) {
-            // Enter fullscreen
-            previewContainer.style.position = 'fixed';
-            previewContainer.style.top = '0';
-            previewContainer.style.left = '0';
-            previewContainer.style.width = '100vw';
-            previewContainer.style.height = '100vh';
-            previewContainer.style.zIndex = '9999';
-            previewContainer.style.backgroundColor = 'white';
-            previewContainer.style.padding = '0';
-            
-            this.deviceFrame.style.display = 'none';
-            this.previewFrame.style.width = '100%';
-            this.previewFrame.style.height = '100%';
-            this.previewFrame.style.borderRadius = '0';
-            
-            this.isFullscreen = true;
-            this.fullscreenPreviewBtn.innerHTML = '<i class="fas fa-compress"></i>';
-            showToast('Entered fullscreen preview mode', 'info');
-        } else {
-            // Exit fullscreen
-            previewContainer.style.position = '';
-            previewContainer.style.top = '';
-            previewContainer.style.left = '';
-            previewContainer.style.width = '';
-            previewContainer.style.height = '';
-            previewContainer.style.zIndex = '';
-            previewContainer.style.backgroundColor = '';
-            previewContainer.style.padding = '';
-            
-            const device = this.deviceSelector?.value || 'mobile';
-            this.setDeviceSize(device);
-            this.deviceFrame.style.display = '';
-            
-            this.isFullscreen = false;
-            this.fullscreenPreviewBtn.innerHTML = '<i class="fas fa-expand"></i>';
-            showToast('Exited fullscreen preview mode', 'info');
+
+            iframeDocument.addEventListener('mouseout', (e) => {
+                e.target.style.outline = 'none';
+            });
+
+            // Add console.log interception
+            const originalLog = iframeWindow.console.log;
+            iframeWindow.console.log = function(...args) {
+                originalLog.apply(iframeWindow.console, args);
+                
+                // Send logs to parent
+                window.parent.postMessage({
+                    type: 'preview_console_log',
+                    data: args.map(arg => typeof arg === 'object' ? JSON.stringify(arg) : String(arg)).join(' ')
+                }, '*');
+            };
+
+            // Add error reporting
+            iframeWindow.addEventListener('error', (e) => {
+                window.parent.postMessage({
+                    type: 'preview_error',
+                    data: {
+                        message: e.message,
+                        filename: e.filename,
+                        lineno: e.lineno,
+                        colno: e.colno
+                    }
+                }, '*');
+            });
+
+        } catch (error) {
+            console.error('Failed to inject preview helpers:', error);
         }
     }
-    
-    updatePreviewStats() {
-        // Update line count
-        const lineCountEl = document.getElementById('lineCount');
-        if (lineCountEl) {
-            const lines = this.currentContent.split('\n').length;
-            lineCountEl.textContent = `${lines} lines`;
-        }
+
+    setupPreviewInteractions() {
+        // Listen for messages from iframe
+        window.addEventListener('message', (e) => {
+            if (e.data.type === 'preview_console_log') {
+                console.log('📱 Preview:', e.data.data);
+            } else if (e.data.type === 'preview_error') {
+                console.error('📱 Preview Error:', e.data.data);
+                this.uiManager.showToast('Preview error detected', 'error');
+            }
+        });
+
+        // Add click handler to iframe for debugging
+        this.previewFrame.addEventListener('load', () => {
+            try {
+                const iframeDocument = this.previewFrame.contentDocument;
+                if (iframeDocument) {
+                    iframeDocument.addEventListener('click', (e) => {
+                        console.log('Preview element clicked:', e.target);
+                    });
+                }
+            } catch (error) {
+                // Cross-origin restriction
+            }
+        });
+    }
+
+    showLoading() {
+        const previewContainer = document.querySelector('.preview-section');
+        if (!previewContainer) return;
+
+        // Remove existing loader
+        const existingLoader = previewContainer.querySelector('.preview-loader');
+        if (existingLoader) existingLoader.remove();
+
+        // Create loader
+        const loader = document.createElement('div');
+        loader.className = 'preview-loader';
+        loader.style.cssText = `
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 100;
+            background: rgba(255,255,255,0.9);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            text-align: center;
+        `;
+        loader.innerHTML = `
+            <div style="width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid #FF3366; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 10px;"></div>
+            <div>Refreshing preview...</div>
+            <style>
+                @keyframes spin {
+                    0% { transform: rotate(0deg); }
+                    100% { transform: rotate(360deg); }
+                }
+            </style>
+        `;
+
+        previewContainer.style.position = 'relative';
+        previewContainer.appendChild(loader);
+    }
+
+    hideLoading() {
+        const loader = document.querySelector('.preview-loader');
+        if (loader) loader.remove();
+    }
+
+    // Screenshot functionality
+    captureScreenshot() {
+        return new Promise((resolve, reject) => {
+            if (!this.previewFrame.contentWindow) {
+                reject(new Error('Preview frame not ready'));
+                return;
+            }
+
+            try {
+                const iframeWindow = this.previewFrame.contentWindow;
+                const iframeDocument = iframeWindow.document;
+
+                html2canvas(iframeDocument.body, {
+                    scale: 2,
+                    useCORS: true,
+                    allowTaint: true,
+                    backgroundColor: '#ffffff'
+                }).then(canvas => {
+                    const imageData = canvas.toDataURL('image/png');
+                    resolve(imageData);
+                }).catch(reject);
+
+            } catch (error) {
+                reject(error);
+            }
+        });
+    }
+
+    downloadScreenshot(filename = 'appforge-preview.png') {
+        this.captureScreenshot()
+            .then(imageData => {
+                const link = document.createElement('a');
+                link.href = imageData;
+                link.download = filename;
+                link.click();
+                
+                this.uiManager.showToast(`Screenshot saved as ${filename}`, 'success');
+                this.utils.trackEvent('screenshot_captured', { filename });
+            })
+            .catch(error => {
+                this.uiManager.showToast('Failed to capture screenshot', 'error');
+                console.error('Screenshot error:', error);
+            });
+    }
+
+    // Preview actions
+    openInNewTab() {
+        const code = window.codeEditor ? window.codeEditor.getCode() : '';
+        const html = this.createPreviewHTML(code);
         
-        // Update file size
-        const fileSizeEl = document.getElementById('fileSize');
-        if (fileSizeEl) {
-            const size = new Blob([this.currentContent]).size;
-            fileSizeEl.textContent = FileUtils.formatFileSize(size);
-        }
+        const newWindow = window.open();
+        newWindow.document.write(html);
+        newWindow.document.close();
         
-        // Update load time (simulated)
-        const loadTimeEl = document.getElementById('loadTime');
-        if (loadTimeEl) {
-            const loadTime = Math.max(50, Math.min(500, this.currentContent.length / 1000));
-            loadTimeEl.textContent = `${Math.round(loadTime)}ms`;
+        this.uiManager.showToast('Opened in new tab', 'info');
+        this.utils.trackEvent('preview_opened_in_new_tab');
+    }
+
+    toggleDeviceFrame() {
+        const deviceFrame = document.querySelector('.device-frame');
+        if (deviceFrame) {
+            const isVisible = deviceFrame.style.display !== 'none';
+            deviceFrame.style.display = isVisible ? 'none' : 'block';
+            
+            this.uiManager.showToast(
+                isVisible ? 'Device frame hidden' : 'Device frame shown',
+                'info'
+            );
+            this.utils.trackEvent('device_frame_toggled', { visible: !isVisible });
         }
     }
-    
-    getCurrentContent() {
-        return this.currentContent;
+
+    toggleHelpers() {
+        const helpers = document.querySelectorAll('.preview-helper, .appforge-preview-marker');
+        const isVisible = helpers[0]?.style.display !== 'none';
+        
+        helpers.forEach(helper => {
+            helper.style.display = isVisible ? 'none' : 'block';
+        });
+        
+        this.uiManager.showToast(
+            isVisible ? 'Helpers hidden' : 'Helpers shown',
+            'info'
+        );
+        this.utils.trackEvent('preview_helpers_toggled', { visible: !isVisible });
     }
-    
-    setCurrentContent(content) {
-        this.currentContent = content;
-        this.updatePreview(content);
+
+    // Performance monitoring
+    measurePerformance() {
+        if (!this.previewFrame.contentWindow) return;
+
+        const iframeWindow = this.previewFrame.contentWindow;
+        const timing = iframeWindow.performance?.timing;
+        
+        if (timing) {
+            const loadTime = timing.loadEventEnd - timing.navigationStart;
+            const domReadyTime = timing.domContentLoadedEventEnd - timing.navigationStart;
+            
+            this.uiManager.showModal(
+                'Preview Performance',
+                `
+                <div class="performance-stats">
+                    <p><strong>Load Time:</strong> ${loadTime}ms</p>
+                    <p><strong>DOM Ready:</strong> ${domReadyTime}ms</p>
+                    <p><strong>Page Size:</strong> ${this.previewFrame.contentDocument?.documentElement.outerHTML.length || 0} bytes</p>
+                    <p><strong>Elements:</strong> ${this.previewFrame.contentDocument?.querySelectorAll('*').length || 0}</p>
+                </div>
+                `
+            );
+            
+            this.utils.trackEvent('performance_measured', { loadTime, domReadyTime });
+        }
     }
-}
 
-// Initialize preview manager
-let previewManager = null;
+    // Responsive testing
+    testResponsive() {
+        const breakpoints = [
+            { name: 'Mobile Small', width: 320 },
+            { name: 'Mobile Medium', width: 375 },
+            { name: 'Mobile Large', width: 425 },
+            { name: 'Tablet', width: 768 },
+            { name: 'Laptop', width: 1024 },
+            { name: 'Desktop', width: 1440 }
+        ];
 
-function initPreviewManager() {
-    previewManager = new PreviewManager();
-    
-    // Export functions to global scope
-    window.updatePreview = (content) => previewManager.updatePreview(content);
-    window.refreshPreview = () => previewManager.refreshPreview();
-    window.getPreviewContent = () => previewManager.getCurrentContent();
-    window.setPreviewContent = (content) => previewManager.setCurrentContent(content);
-    
-    console.log('Preview manager functions exported');
-}
+        let currentIndex = 0;
 
-// Export
-window.initPreviewManager = initPreviewManager;
-window.previewManager = previewManager;
+        const testNextBreakpoint = () => {
+            if (currentIndex >= breakpoints.length) {
+                this.setSize('mobile'); // Reset to default
+                this.uiManager.showToast('Responsive test completed', 'success');
+                return;
+            }
 
-// Debounce helper
-function debounce(func, wait) {
-    let timeout;
-    return function executedFunction(...args) {
-        const later = () => {
-            clearTimeout(timeout);
-            func(...args);
+            const breakpoint = breakpoints[currentIndex];
+            this.setCustomSize(breakpoint.width, 800);
+            
+            this.uiManager.showModal(
+                'Responsive Testing',
+                `
+                <div class="responsive-test">
+                    <h4>Testing: ${breakpoint.name}</h4>
+                    <p>Width: ${breakpoint.width}px</p>
+                    <p>${currentIndex + 1} of ${breakpoints.length}</p>
+                    <div class="test-controls">
+                        <button class="btn btn-outline" onclick="previewManager.setSize('mobile'); uiManager.closeModal()">Cancel</button>
+                        <button class="btn btn-primary" onclick="uiManager.closeModal(); setTimeout(() => previewManager.continueResponsiveTest(), 1000)">Next</button>
+                    </div>
+                </div>
+                `,
+                { footer: '' }
+            );
+            
+            currentIndex++;
         };
-        clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
-    };
+
+        // Start test
+        testNextBreakpoint();
+    }
+
+    continueResponsiveTest = this.testResponsive;
+
+    setCustomSize(width, height) {
+        const deviceFrame = document.querySelector('.device-frame');
+        if (!deviceFrame) return;
+
+        deviceFrame.style.width = `${width}px`;
+        deviceFrame.style.height = `${height}px`;
+        
+        // Calculate scale to fit container
+        const container = document.querySelector('.preview-frame-container');
+        if (container) {
+            const containerWidth = container.clientWidth;
+            const scale = Math.min(containerWidth / width, 1);
+            deviceFrame.style.transform = `scale(${scale})`;
+        }
+    }
+
+    // Preview sharing
+    generateShareableLink() {
+        const code = window.codeEditor ? window.codeEditor.getCode() : '';
+        if (!code.trim()) {
+            this.uiManager.showToast('No code to share', 'warning');
+            return;
+        }
+
+        // Compress code (simple base64 for demo)
+        const compressed = btoa(encodeURIComponent(code));
+        const shareUrl = `${window.location.origin}${window.location.pathname}#preview=${compressed}`;
+        
+        this.uiManager.showModal(
+            'Share Preview',
+            `
+            <div class="share-preview">
+                <p>Copy this link to share your preview:</p>
+                <input type="text" readonly value="${shareUrl}" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 4px;">
+                <div class="share-actions">
+                    <button class="btn btn-outline" onclick="navigator.clipboard.writeText('${shareUrl}'); uiManager.showToast('Link copied!', 'success')">Copy Link</button>
+                    <button class="btn btn-primary" onclick="window.open('${shareUrl}', '_blank')">Open Link</button>
+                </div>
+            </div>
+            `
+        );
+        
+        this.utils.trackEvent('share_link_generated');
+    }
+
+    // Load from share link
+    loadFromShareLink(compressedCode) {
+        try {
+            const code = decodeURIComponent(atob(compressedCode));
+            if (window.codeEditor) {
+                window.codeEditor.setCode(code);
+                this.uiManager.showToast('Preview loaded from share link', 'success');
+                this.utils.trackEvent('share_link_loaded');
+            }
+        } catch (error) {
+            this.uiManager.showToast('Invalid share link', 'error');
+        }
+    }
+
+    // Check for share link on load
+    checkForShareLink() {
+        const hash = window.location.hash;
+        const match = hash.match(/#preview=(.+)/);
+        
+        if (match) {
+            this.loadFromShareLink(match[1]);
+        }
+    }
+}
+
+// Create global instance
+window.previewManager = new PreviewManager();
+
+// Export for module usage
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = PreviewManager;
 }
