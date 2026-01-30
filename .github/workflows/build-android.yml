@@ -1,0 +1,139 @@
+name: Build Android APK
+
+on:
+  workflow_dispatch:
+    inputs:
+      app_name:
+        description: 'App Name'
+        required: true
+        default: 'AppForge App'
+      app_id:
+        description: 'App ID (com.example.app)'
+        required: true
+        default: 'com.appforge.generated'
+      version:
+        description: 'Version'
+        required: true
+        default: '1.0.0'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+    
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+    
+    - name: Create Android project structure
+      run: |
+        mkdir -p android-build
+        echo "Creating Android build structure..."
+        
+        # Create basic Android structure
+        mkdir -p android-build/app/src/main/assets/www
+        mkdir -p android-build/app/src/main/res
+        
+        # Copy HTML content
+        cp index.html android-build/app/src/main/assets/www/
+        
+        # Create config.xml for Cordova
+        cat > android-build/config.xml << EOF
+        <?xml version='1.0' encoding='utf-8'?>
+        <widget id="${{ github.event.inputs.app_id }}" 
+                version="${{ github.event.inputs.version }}" 
+                xmlns="http://www.w3.org/ns/widgets" 
+                xmlns:cdv="http://cordova.apache.org/ns/1.0">
+            <name>${{ github.event.inputs.app_name }}</name>
+            <description>App created with AppForge</description>
+            <author email="support@appforge.dev" href="https://appforge.dev">AppForge Team</author>
+            <content src="index.html" />
+            <allow-intent href="http://*/*" />
+            <allow-intent href="https://*/*" />
+            <platform name="android">
+                <allow-intent href="market:*" />
+            </platform>
+        </widget>
+        EOF
+        
+        # Create package.json
+        cat > android-build/package.json << EOF
+        {
+          "name": "${{ github.event.inputs.app_id }}",
+          "displayName": "${{ github.event.inputs.app_name }}",
+          "version": "${{ github.event.inputs.version }}",
+          "description": "App created with AppForge",
+          "main": "index.html",
+          "scripts": {
+            "test": "echo \"Error: no test specified\" && exit 1"
+          },
+          "author": "AppForge",
+          "license": "Apache-2.0",
+          "dependencies": {
+            "cordova-android": "^10.0.0"
+          },
+          "cordova": {
+            "platforms": [
+              "android"
+            ]
+          }
+        }
+        EOF
+    
+    - name: Setup Java
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'temurin'
+        java-version: '11'
+    
+    - name: Build APK (Simulated)
+      run: |
+        cd android-build
+        echo "📱 Building APK for: ${{ github.event.inputs.app_name }}"
+        echo "📦 App ID: ${{ github.event.inputs.app_id }}"
+        echo "🏷️ Version: ${{ github.event.inputs.version }}"
+        echo "⏰ Build started: $(date)"
+        
+        # Simulate build steps
+        echo "1. Installing dependencies..."
+        sleep 2
+        echo "2. Compiling resources..."
+        sleep 2
+        echo "3. Building APK..."
+        sleep 2
+        echo "4. Signing APK..."
+        sleep 2
+        
+        # Create a dummy APK file for demonstration
+        echo "APK_BUILD_SIMULATION" > app-debug.apk
+        echo "✅ Build completed!"
+        
+        # Show file info
+        echo "📊 APK size: 1.5MB (simulated)"
+        echo "📁 Output: app-debug.apk"
+    
+    - name: Upload APK artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: android-apk
+        path: android-build/app-debug.apk
+        if-no-files-found: error
+    
+    - name: Generate build summary
+      run: |
+        echo "## 🏗️ APK Build Complete" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "**App Name:** ${{ github.event.inputs.app_name }}" >> $GITHUB_STEP_SUMMARY
+        echo "**Package ID:** ${{ github.event.inputs.app_id }}" >> $GITHUB_STEP_SUMMARY
+        echo "**Version:** ${{ github.event.inputs.version }}" >> $GITHUB_STEP_SUMMARY
+        echo "**Build Date:** $(date)" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### 📥 Download" >> $GITHUB_STEP_SUMMARY
+        echo "The APK file is available as an artifact named 'android-apk'" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### ⚠️ Note" >> $GITHUB_STEP_SUMMARY
+        echo "This is a simulated build. In production, this would use Cordova/Capacitor to build a real APK." >> $GITHUB_STEP_SUMMARY
