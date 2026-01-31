@@ -1,424 +1,323 @@
-/* APK Builder Specific Styles */
-
-.apk-builder-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-}
+/* APK Builder Styles */
 
 .apk-builder-content {
-    background: var(--surface-color);
-    border-radius: var(--radius);
-    width: 90%;
-    max-width: 600px;
-    max-height: 90vh;
+    padding: 24px;
+    max-height: 500px;
     overflow-y: auto;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-    animation: modalFadeIn 0.3s ease;
 }
 
-@keyframes modalFadeIn {
-    from {
-        opacity: 0;
-        transform: scale(0.9) translateY(-20px);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-    }
+.apk-config {
+    margin-bottom: 24px;
 }
 
-.apk-builder-header {
-    padding: 1.5rem;
-    border-bottom: 1px solid var(--border-color);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+.config-group {
+    margin-bottom: 16px;
 }
 
-.apk-builder-header h3 {
-    color: var(--text-color);
-    font-size: 1.5rem;
-}
-
-.close-btn {
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    color: var(--text-secondary);
-    cursor: pointer;
-    padding: 0.5rem;
-    border-radius: 50%;
-    transition: var(--transition);
-}
-
-.close-btn:hover {
-    background: var(--border-color);
-    color: var(--text-color);
-}
-
-.apk-builder-body {
-    padding: 2rem;
-}
-
-.build-step {
-    margin-bottom: 2rem;
-    padding-bottom: 1.5rem;
-    border-bottom: 1px solid var(--border-color);
-}
-
-.build-step h4 {
-    color: var(--text-color);
-    margin-bottom: 1rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.build-step.completed h4 {
-    color: var(--secondary-color);
-}
-
-.build-step.active h4 {
-    color: var(--primary-color);
-}
-
-.step-indicator {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    background: var(--border-color);
-    color: var(--text-secondary);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.8rem;
-    font-weight: 600;
-}
-
-.build-step.completed .step-indicator {
-    background: var(--secondary-color);
-    color: white;
-}
-
-.build-step.active .step-indicator {
-    background: var(--primary-color);
-    color: white;
-}
-
-.app-config-form {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-}
-
-.form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-}
-
-.form-group label {
-    color: var(--text-color);
+.config-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 13px;
     font-weight: 500;
-    font-size: 0.9rem;
+    color: var(--text-secondary);
 }
 
-.form-group input, .form-group textarea, .form-group select {
-    padding: 0.75rem 1rem;
-    border-radius: var(--radius);
+.config-group input,
+.config-group select {
+    width: 100%;
+    padding: 12px 16px;
+    background: var(--bg-tertiary);
     border: 1px solid var(--border-color);
-    background: var(--surface-color);
-    color: var(--text-color);
-    font-family: 'Inter', sans-serif;
-    transition: var(--transition);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-size: 14px;
+    transition: all var(--transition-fast);
 }
 
-.form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+.config-group input:focus,
+.config-group select:focus {
     outline: none;
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(255, 51, 102, 0.1);
+    border-color: var(--color-secondary);
 }
 
-.form-group textarea {
-    resize: vertical;
-    min-height: 100px;
+.config-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
 }
 
-.icon-preview {
-    width: 128px;
-    height: 128px;
-    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-    border-radius: 24px;
+/* Icon Upload */
+.apk-icons {
+    margin-bottom: 24px;
+}
+
+.apk-icons h4 {
+    font-size: 14px;
+    margin-bottom: 12px;
+    color: var(--text-secondary);
+}
+
+.icon-uploads {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+}
+
+.icon-upload label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+.upload-zone {
+    aspect-ratio: 1;
+    background: var(--bg-tertiary);
+    border: 2px dashed var(--border-color);
+    border-radius: var(--radius-md);
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    font-size: 3rem;
-    color: white;
-    margin: 1rem 0;
-    box-shadow: var(--shadow);
+    gap: 8px;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    overflow: hidden;
 }
 
-.build-progress {
-    background: var(--background-color);
-    border-radius: var(--radius);
-    padding: 2rem;
+.upload-zone:hover {
+    border-color: var(--color-secondary);
+    background: var(--bg-hover);
+}
+
+.upload-zone.dragover {
+    border-color: var(--color-success);
+    background: rgba(76, 175, 80, 0.1);
+}
+
+.upload-zone i {
+    font-size: 32px;
+    color: var(--text-muted);
+}
+
+.upload-zone span {
+    font-size: 12px;
+    color: var(--text-muted);
     text-align: center;
+    padding: 0 12px;
+}
+
+.upload-zone img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Permissions */
+.apk-permissions {
+    margin-bottom: 24px;
+}
+
+.apk-permissions h4 {
+    font-size: 14px;
+    margin-bottom: 12px;
+    color: var(--text-secondary);
+}
+
+.permission-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.permission-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.permission-item:hover {
+    background: var(--bg-hover);
+}
+
+.permission-item input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--color-secondary);
+}
+
+.permission-item span {
+    font-size: 13px;
+}
+
+/* Build Progress */
+.build-progress {
+    margin-top: 24px;
+    padding: 20px;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-md);
 }
 
 .progress-bar {
     height: 8px;
-    background: var(--border-color);
+    background: var(--bg-secondary);
     border-radius: 4px;
-    margin: 2rem 0;
     overflow: hidden;
+    margin-bottom: 12px;
 }
 
 .progress-fill {
     height: 100%;
-    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+    background: linear-gradient(90deg, var(--color-secondary), var(--color-info));
     border-radius: 4px;
-    width: 0%;
     transition: width 0.3s ease;
 }
 
-.progress-steps {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 1rem;
+.progress-text {
+    text-align: center;
+    font-size: 14px;
     color: var(--text-secondary);
-    font-size: 0.9rem;
 }
 
-.progress-step {
-    text-align: center;
+/* Export History */
+.history-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-md);
+    margin-bottom: 12px;
+    transition: all var(--transition-fast);
+}
+
+.history-item:hover {
+    background: var(--bg-hover);
+}
+
+.history-icon {
+    width: 40px;
+    height: 40px;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+}
+
+.history-info {
     flex: 1;
 }
 
-.progress-step.active {
-    color: var(--primary-color);
-    font-weight: 600;
+.history-filename {
+    font-weight: 500;
+    margin-bottom: 4px;
 }
 
-.progress-step.completed {
-    color: var(--secondary-color);
-}
-
-.build-log {
-    background: var(--background-color);
-    border-radius: var(--radius);
-    padding: 1rem;
-    margin-top: 1rem;
-    max-height: 200px;
-    overflow-y: auto;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.8rem;
-    color: var(--text-color);
-}
-
-.log-entry {
-    padding: 0.25rem 0;
-    border-bottom: 1px solid var(--border-color);
-}
-
-.log-entry.success {
-    color: #10B981;
-}
-
-.log-entry.error {
-    color: #EF4444;
-}
-
-.log-entry.info {
-    color: var(--text-secondary);
-}
-
-.download-section {
-    text-align: center;
-    padding: 2rem;
-}
-
-.apk-file {
-    background: var(--background-color);
-    border-radius: var(--radius);
-    padding: 1.5rem;
-    margin: 1.5rem 0;
+.history-meta {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
+    gap: 12px;
+    font-size: 12px;
+    color: var(--text-muted);
 }
 
-.apk-info {
-    text-align: left;
-}
-
-.apk-info h5 {
-    color: var(--text-color);
-    margin-bottom: 0.5rem;
-}
-
-.apk-info p {
-    color: var(--text-secondary);
-    font-size: 0.9rem;
-}
-
-.download-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 1rem 2rem;
-    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+.history-type {
+    padding: 2px 8px;
+    background: var(--color-secondary);
     color: white;
-    border: none;
-    border-radius: var(--radius);
+    border-radius: 4px;
+    font-size: 10px;
     font-weight: 600;
-    font-size: 1.1rem;
-    cursor: pointer;
-    transition: var(--transition);
-    text-decoration: none;
+    text-transform: uppercase;
 }
 
-.download-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 25px rgba(255, 51, 102, 0.3);
-}
-
-.license-required {
-    background: rgba(255, 51, 102, 0.1);
-    border: 2px solid var(--primary-color);
-    border-radius: var(--radius);
-    padding: 1.5rem;
-    margin-top: 1.5rem;
-    text-align: center;
-}
-
-.license-required h4 {
-    color: var(--primary-color);
-    margin-bottom: 0.5rem;
-}
-
-.payment-options {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1rem;
-    margin-top: 1rem;
-}
-
-.payment-option {
-    background: var(--surface-color);
-    border: 2px solid var(--border-color);
-    border-radius: var(--radius);
-    padding: 1rem;
-    text-align: center;
-    cursor: pointer;
-    transition: var(--transition);
-}
-
-.payment-option:hover, .payment-option.selected {
-    border-color: var(--primary-color);
-    background: rgba(255, 51, 102, 0.05);
-}
-
-.payment-option.selected {
-    border-width: 3px;
-}
-
-.payment-icon {
-    font-size: 2rem;
-    margin-bottom: 0.5rem;
-}
-
-.payment-option h5 {
-    color: var(--text-color);
-    margin-bottom: 0.5rem;
-}
-
-.payment-option p {
+.history-download {
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: var(--bg-secondary);
     color: var(--text-secondary);
-    font-size: 0.9rem;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.price-tag {
-    font-size: 1.5rem;
+.history-download:hover {
+    background: var(--color-secondary);
+    color: white;
+}
+
+/* Upgrade Modal */
+.upgrade-modal {
+    text-align: center;
+    padding: 20px;
+}
+
+.upgrade-modal h3 {
+    font-size: 24px;
+    margin-bottom: 16px;
+}
+
+.upgrade-price {
+    font-size: 48px;
     font-weight: 700;
-    color: var(--primary-color);
-    margin-top: 0.5rem;
+    margin-bottom: 24px;
 }
 
-.subscription-benefits {
-    margin-top: 1.5rem;
-}
-
-.benefit-list {
-    list-style: none;
-    padding: 0;
-}
-
-.benefit-list li {
-    padding: 0.5rem 0;
-    color: var(--text-color);
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.benefit-list li:before {
-    content: "✓";
-    color: var(--secondary-color);
-    font-weight: bold;
-}
-
-/* Loading Animation for Build */
-.build-loading {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 3rem;
-}
-
-.build-spinner {
-    width: 60px;
-    height: 60px;
-    border: 4px solid var(--border-color);
-    border-top: 4px solid var(--primary-color);
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    margin-bottom: 1rem;
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-/* QR Code Display */
-.qr-container {
-    text-align: center;
-    padding: 2rem;
-}
-
-.qr-code {
-    width: 200px;
-    height: 200px;
-    background: white;
-    margin: 1rem auto;
-    padding: 1rem;
-    border-radius: var(--radius);
-    box-shadow: var(--shadow);
-}
-
-.qr-instructions {
+.upgrade-price span {
+    font-size: 16px;
+    font-weight: 400;
     color: var(--text-secondary);
-    font-size: 0.9rem;
-    margin-top: 1rem;
+}
+
+.upgrade-features {
+    list-style: none;
+    text-align: left;
     max-width: 300px;
-    margin-left: auto;
-    margin-right: auto;
+    margin: 0 auto 24px;
+}
+
+.upgrade-features li {
+    padding: 8px 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.upgrade-features li i {
+    color: var(--color-success);
+}
+
+.btn-checkout {
+    width: 100%;
+    max-width: 300px;
+}
+
+/* Tier colors */
+.tier-free { color: var(--color-success); }
+.tier-pro { color: var(--color-warning); }
+.tier-team { color: var(--color-info); }
+
+/* Responsive */
+@media (max-width: 768px) {
+    .config-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .icon-uploads {
+        grid-template-columns: 1fr;
+    }
+    
+    .permission-list {
+        grid-template-columns: 1fr;
+    }
 }
