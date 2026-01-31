@@ -18,6 +18,52 @@ class UIManager {
         this.setupTooltips();
     }
 
+    // Event Listeners
+    setupEventListeners() {
+        // Theme toggle button
+        const themeToggle = document.getElementById('themeToggle');
+        if (themeToggle) {
+            themeToggle.addEventListener('click', () => this.toggleTheme());
+        }
+
+        // Mobile menu toggle
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        if (mobileMenuBtn) {
+            mobileMenuBtn.addEventListener('click', () => this.toggleMobileMenu());
+        }
+
+        // Window resize
+        window.addEventListener('resize', () => this.handleResize());
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => this.handleKeyboard(e));
+    }
+
+    toggleMobileMenu() {
+        const navLinks = document.getElementById('navLinks');
+        if (navLinks) {
+            navLinks.classList.toggle('active');
+        }
+    }
+
+    handleResize() {
+        // Handle responsive layout changes
+        if (window.innerWidth > 768) {
+            const navLinks = document.getElementById('navLinks');
+            if (navLinks) {
+                navLinks.classList.remove('active');
+            }
+        }
+    }
+
+    handleKeyboard(e) {
+        // ESC to close modals
+        if (e.key === 'Escape' && this.currentModal) {
+            this.closeModal();
+        }
+    }
+
+
     // Theme Management
     setupTheme() {
         const savedTheme = this.utils.getTheme();
@@ -87,7 +133,7 @@ class UIManager {
         // Close any existing modal
         this.closeModal();
 
-        const modalId = `modal-${this.utils.randomId(6)}`;
+        const modalId = `modal-${this.utils.generateId(6)}`;
         const modalHTML = `
             <div class="modal-overlay" id="${modalId}">
                 <div class="modal-content">
@@ -404,7 +450,7 @@ class UIManager {
     }
 
     showToast(message, type = 'info', title = '', duration = 5000) {
-        const toastId = `toast-${this.utils.randomId(6)}`;
+        const toastId = `toast-${this.utils.generateId(6)}`;
         const icons = {
             success: '✅',
             error: '❌',
@@ -729,7 +775,7 @@ class UIManager {
     // Prompt Dialog
     prompt(message, defaultValue = '', title = 'Input Required') {
         return new Promise((resolve) => {
-            const inputId = `prompt-input-${this.utils.randomId(6)}`;
+            const inputId = `prompt-input-${this.utils.generateId(6)}`;
             const modalContent = `
                 <p>${message}</p>
                 <input type="text" id="${inputId}" class="form-control" value="${defaultValue}" placeholder="Enter value...">

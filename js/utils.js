@@ -97,4 +97,70 @@ window.utils = {
     copyToClipboard: function(text) {
         return navigator.clipboard.writeText(text).then(() => true);
     }
+
+    randomId: function(length = 8) {
+        return this.generateId(length);
+    },
+
+    getTheme: function() {
+        return localStorage.getItem('theme') || 'light';
+    },
+
+    setTheme: function(theme) {
+        localStorage.setItem('theme', theme);
+        document.documentElement.setAttribute('data-theme', theme);
+        return theme;
+    },
+
+    toggleTheme: function() {
+        const currentTheme = this.getTheme();
+        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+        return this.setTheme(newTheme);
+    },
+
+    capitalize: function(str) {
+        if (!str) return '';
+        return str.charAt(0).toUpperCase() + str.slice(1);
+    },
+
+    isValidEmail: function(email) {
+        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return re.test(email);
+    },
+
+    isValidUrl: function(url) {
+        try {
+            new URL(url);
+            return true;
+        } catch {
+            return false;
+        }
+    },
+
+    fetchWithTimeout: function(url, options = {}, timeout = 10000) {
+        return Promise.race([
+            fetch(url, options),
+            new Promise((_, reject) => 
+                setTimeout(() => reject(new Error('Request timeout')), timeout)
+            )
+        ]);
+    },
+
+    clearStorage: function() {
+        try {
+            localStorage.clear();
+            return true;
+        } catch (e) {
+            console.error('Storage clear error:', e);
+            return false;
+        }
+    },
+
+    slugify: function(str) {
+        return str
+            .toLowerCase()
+            .replace(/[^\w\s-]/g, '')
+            .replace(/[\s_-]+/g, '-')
+            .replace(/^-+|-+$/g, '');
+    }
 };

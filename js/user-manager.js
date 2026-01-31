@@ -33,7 +33,7 @@ class UserManager {
 
     createGuestUser() {
         return {
-            id: 'guest_' + this.utils.randomId(8),
+            id: 'guest_' + this.utils.generateId(8),
             type: 'guest',
             name: 'Guest',
             email: null,
@@ -381,7 +381,7 @@ class UserManager {
 
         // Create new user
         const newUser = {
-            id: 'user_' + this.utils.randomId(12),
+            id: 'user_' + this.utils.generateId(12),
             type: 'registered',
             name: name,
             email: email,
@@ -889,7 +889,7 @@ class UserManager {
 
     addProject(project) {
         this.currentUser.projects.push({
-            id: this.utils.randomId(8),
+            id: this.utils.generateId(8),
             ...project,
             createdAt: new Date().toISOString()
         });
