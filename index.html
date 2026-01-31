@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="AppForge AI - Create mobile apps from text descriptions. Generate HTML, PWA, and APK files instantly.">
+    <meta name="description" content="AppForge AI - From Imagination to Installation. Build high-quality web apps at lightning speed.">
     <meta name="keywords" content="AI app builder, mobile app generator, PWA, APK, no-code">
     <meta name="author" content="AppForge AI">
-    <title>AppForge AI - From Imagination to Installation</title>
+    <title>AppForge - From Imagination to Installation</title>
     
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -14,522 +14,951 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     
-    <!-- CSS Files -->
-    <link rel="stylesheet" href="css/main.css">
-    <link rel="stylesheet" href="css/apk-builder.css">
-    <link rel="stylesheet" href="css/syntax-highlight.css">
+    <!-- CSS -->
+    <style>
+        :root {
+            --primary: #00d4ff;
+            --primary-glow: rgba(0, 212, 255, 0.5);
+            --secondary: #ff00a0;
+            --secondary-glow: rgba(255, 0, 160, 0.5);
+            --accent: #7b2dff;
+            --accent-glow: rgba(123, 45, 255, 0.5);
+            --bg-dark: #0a0a0f;
+            --bg-panel: rgba(15, 15, 25, 0.85);
+            --bg-card: rgba(20, 20, 35, 0.9);
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0b0;
+            --border-glow: rgba(0, 212, 255, 0.3);
+            --success: #00ff88;
+            --warning: #ffaa00;
+            --danger: #ff3366;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: 
+                radial-gradient(ellipse at 20% 20%, rgba(0, 212, 255, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(255, 0, 160, 0.1) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(123, 45, 255, 0.08) 0%, transparent 70%),
+                var(--bg-dark);
+        }
+
+        .bg-animation::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                linear-gradient(rgba(0, 212, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 212, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridMove 20s linear infinite;
+        }
+
+        @keyframes gridMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+
+        /* Header */
+        header {
+            padding: 20px 40px;
+            backdrop-filter: blur(20px);
+            background: rgba(10, 10, 15, 0.8);
+            border-bottom: 1px solid rgba(0, 212, 255, 0.2);
+        }
+
+        .navbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            position: relative;
+        }
+
+        .logo-icon svg {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 0 20px var(--primary-glow));
+        }
+
+        .logo-text {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px var(--primary-glow);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--primary);
+            background: rgba(0, 212, 255, 0.1);
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
+        }
+
+        .nav-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-left: 20px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 12px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            box-shadow: 0 0 20px var(--primary-glow);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 30px var(--primary-glow);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid rgba(0, 212, 255, 0.5);
+            color: var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: rgba(0, 212, 255, 0.1);
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+        }
+
+        .btn-icon {
+            padding: 12px;
+            border-radius: 50%;
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .hero h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, #fff, var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 40px rgba(255, 255, 255, 0.3);
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+        }
+
+        /* Main Content */
+        main {
+            padding: 20px 40px 40px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .app-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        /* Panels */
+        .panel {
+            background: var(--bg-panel);
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            border-radius: 20px;
+            padding: 25px;
+            backdrop-filter: blur(20px);
+            box-shadow: 
+                0 10px 40px rgba(0, 0, 0, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(0, 212, 255, 0.2);
+        }
+
+        .panel-header h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.3rem;
+            color: var(--primary);
+        }
+
+        .panel-header p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-left: auto;
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 14px 18px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
+        }
+
+        textarea.form-control {
+            min-height: 180px;
+            resize: vertical;
+            line-height: 1.6;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        select.form-control {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2300d4ff' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            padding-right: 40px;
+        }
+
+        /* Features Grid */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin: 20px 0;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 15px;
+            background: rgba(0, 212, 255, 0.05);
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .feature-item:hover {
+            background: rgba(0, 212, 255, 0.1);
+            border-color: var(--primary);
+        }
+
+        .feature-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        .feature-item label {
+            margin: 0;
+            cursor: pointer;
+            color: var(--text-primary);
+        }
+
+        /* Export Options */
+        .export-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .export-card {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 20px;
+            background: var(--bg-card);
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .export-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 0 30px rgba(0, 212, 255, 0.2);
+            transform: translateY(-3px);
+        }
+
+        .export-icon {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 212, 255, 0.1);
+            border-radius: 12px;
+            font-size: 1.5rem;
+        }
+
+        .export-info h4 {
+            font-size: 1rem;
+            margin-bottom: 4px;
+        }
+
+        .export-info p {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .export-card.primary {
+            grid-column: span 2;
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.2), rgba(123, 45, 255, 0.2));
+            border-color: var(--primary);
+        }
+
+        .export-card.primary .export-icon {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Preview Panel */
+        .preview-panel {
+            position: relative;
+        }
+
+        .preview-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .preview-header h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.3rem;
+            color: var(--primary);
+        }
+
+        .device-selector {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 10px;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        .device-frame {
+            position: relative;
+            background: #000;
+            border-radius: 30px;
+            padding: 15px;
+            box-shadow: 
+                0 0 0 2px rgba(0, 212, 255, 0.3),
+                0 0 60px rgba(0, 212, 255, 0.2);
+        }
+
+        .device-notch {
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 25px;
+            background: #000;
+            border-radius: 0 0 15px 15px;
+            z-index: 10;
+        }
+
+        .device-screen {
+            width: 100%;
+            aspect-ratio: 9/19;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .preview-frame {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: white;
+        }
+
+        .device-home {
+            position: absolute;
+            bottom: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 2px;
+        }
+
+        /* Code Editor Panel */
+        .editor-panel {
+            margin-top: 20px;
+        }
+
+        .editor-tabs {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 15px;
+        }
+
+        .editor-tab {
+            padding: 10px 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            border-radius: 10px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .editor-tab.active {
+            background: rgba(0, 212, 255, 0.2);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .code-editor {
+            width: 100%;
+            min-height: 300px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            resize: vertical;
+        }
+
+        .code-editor:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        /* Toast Notifications */
+        .toast-container {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toast {
+            padding: 15px 25px;
+            background: var(--bg-panel);
+            border: 1px solid;
+            border-radius: 12px;
+            backdrop-filter: blur(20px);
+            animation: slideIn 0.3s ease;
+        }
+
+        .toast.success {
+            border-color: var(--success);
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+        }
+
+        .toast.error {
+            border-color: var(--danger);
+            box-shadow: 0 0 20px rgba(255, 51, 102, 0.3);
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-panel);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 800px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 0 60px rgba(0, 212, 255, 0.2);
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--primary);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .modal-close:hover {
+            color: var(--primary);
+        }
+
+        .system-prompt {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            border-radius: 12px;
+            padding: 20px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: var(--text-secondary);
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .app-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .hero h1 {
+                font-size: 2rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            header {
+                padding: 15px 20px;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            main {
+                padding: 15px 20px;
+            }
+            
+            .hero h1 {
+                font-size: 1.5rem;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .export-options {
+                grid-template-columns: 1fr;
+            }
+            
+            .export-card.primary {
+                grid-column: span 1;
+            }
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(0, 212, 255, 0.3);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(0, 212, 255, 0.3);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 212, 255, 0.5);
+        }
+    </style>
     
     <!-- PWA Support -->
     <link rel="manifest" href="manifest.json">
     <link rel="icon" href="favicon.ico">
-    
-    <!-- Apple Touch Icon -->
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
-    
-    <!-- Theme Color -->
-    <meta name="theme-color" content="#00ff88">
-<base target="_blank">
+    <meta name="theme-color" content="#00d4ff">
 </head>
 <body>
+    <!-- Animated Background -->
+    <div class="bg-animation"></div>
+
     <!-- Header -->
     <header>
-        <div class="container">
-            <nav class="navbar">
-                <a href="#" class="logo">
-                    <i class="fas fa-robot logo-icon"></i>
-                    <span>AppForge AI</span>
+        <nav class="navbar">
+            <a href="#" class="logo">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#00d4ff"/>
+                                <stop offset="100%" style="stop-color:#7b2dff"/>
+                            </linearGradient>
+                        </defs>
+                        <path d="M50 5L90 25V75L50 95L10 75V25L50 5Z" stroke="url(#logoGrad)" stroke-width="4" fill="none"/>
+                        <path d="M50 20L75 32.5V57.5L50 70L25 57.5V32.5L50 20Z" fill="url(#logoGrad)"/>
+                        <path d="M50 35L60 40V50L50 55L40 50V40L50 35Z" fill="#0a0a0f"/>
+                    </svg>
+                </div>
+                <span class="logo-text">AppForge</span>
+            </a>
+            
+            <div class="nav-links">
+                <a href="#" class="nav-link active" data-section="editor">
+                    <i class="fas fa-code"></i> Editor
+                </a>
+                <a href="#" class="nav-link" data-section="templates">
+                    <i class="fas fa-layer-group"></i> Templates
+                </a>
+                <a href="#" class="nav-link" data-section="export">
+                    <i class="fas fa-download"></i> Export
+                </a>
+                <a href="#" class="nav-link" data-section="docs">
+                    <i class="fas fa-book"></i> Docs
                 </a>
                 
-                <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle menu">
-                    <i class="fas fa-bars"></i>
-                </button>
-                
-                <div class="nav-links" id="navLinks">
-                    <a href="#" class="nav-link active" data-section="editor">
-                        <i class="fas fa-code"></i> Editor
-                    </a>
-                    <a href="#" class="nav-link" data-section="templates">
-                        <i class="fas fa-layer-group"></i> Templates
-                    </a>
-                    <a href="#" class="nav-link" data-section="export">
-                        <i class="fas fa-download"></i> Export
-                    </a>
-                    <a href="#" class="nav-link" data-section="docs">
-                        <i class="fas fa-book"></i> Docs
-                    </a>
-                    
-                    <div class="nav-controls">
-                        <button class="btn btn-icon btn-outline" id="themeToggle" title="Toggle theme">
-                            <i class="fas fa-moon"></i>
-                        </button>
-                        <button class="btn btn-primary" id="viewPromptBtn">
-                            <i class="fas fa-robot"></i> AI System
-                        </button>
-                    </div>
+                <div class="nav-controls">
+                    <button class="btn btn-icon btn-outline" id="themeToggle" title="Toggle theme">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <button class="btn btn-primary" id="viewPromptBtn">
+                        <i class="fas fa-robot"></i> AI System
+                    </button>
                 </div>
-            </nav>
-        </div>
+            </div>
+        </nav>
     </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <h1>From Imagination to Installation</h1>
+        <p>Build high-quality web apps at lightning speed.</p>
+    </section>
 
     <!-- Main Content -->
     <main>
-        <div class="container">
-            <div class="app-grid">
-                <!-- Left Panel: Editor & Configuration -->
-                <div class="left-panel">
-                    <!-- AI Generator Section -->
-                    <div class="panel generator-panel">
-                        <div class="panel-header">
-                            <h2><i class="fas fa-magic"></i> AI App Generator</h2>
-                            <p>Describe your app and let AI build it</p>
+        <div class="app-grid">
+            <!-- Left Panel: AI Generator -->
+            <div class="left-panel">
+                <div class="panel generator-panel">
+                    <div class="panel-header">
+                        <h2><i class="fas fa-magic"></i> AI App Generator</h2>
+                        <p>Describe your app and let AI build it</p>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="appDescription">
+                            <i class="fas fa-comment-alt"></i> App Description
+                        </label>
+                        <textarea id="appDescription" class="form-control" placeholder="Describe your mobile app in detail..."></textarea>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="appType">
+                                <i class="fas fa-mobile-alt"></i> App Type
+                            </label>
+                            <select id="appType" class="form-control">
+                                <option value="task">Task Manager</option>
+                                <option value="notes">Notes App</option>
+                                <option value="fitness">Fitness Tracker</option>
+                                <option value="ecommerce">E-commerce</option>
+                                <option value="social">Social App</option>
+                                <option value="custom">Custom</option>
+                            </select>
                         </div>
                         
-                        <div class="tab-container">
-                            <div class="tabs">
-                                <button class="tab-btn active" data-tab="ai">AI Generator</button>
-                                <button class="tab-btn" data-tab="manual">Manual Code</button>
-                                <button class="tab-btn" data-tab="templates">Templates</button>
-                            </div>
-                            
-                            <!-- AI Generator Tab -->
-                            <div class="tab-content active" id="ai-tab">
-                                <div class="form-group">
-                                    <label for="appDescription">
-                                        <i class="fas fa-comment-alt"></i> App Description
-                                    </label>
-                                    <textarea id="appDescription" placeholder="Describe your mobile app in detail...">Create a task management app with:
-• Login screen with email/password
-• Dashboard showing task statistics
-• Task list with swipe actions
-• Add/edit task modal
-• Dark/light theme toggle
-• Push notifications</textarea>
-                                </div>
-                                
-                                <div class="form-row">
-                                    <div class="form-group">
-                                        <label for="appType">
-                                            <i class="fas fa-mobile-alt"></i> App Type
-                                        </label>
-                                        <select id="appType" class="form-control">
-                                            <option value="task">Task Manager</option>
-                                            <option value="notes">Notes App</option>
-                                            <option value="fitness">Fitness Tracker</option>
-                                            <option value="ecommerce">E-commerce</option>
-                                            <option value="social">Social App</option>
-                                            <option value="custom">Custom</option>
-                                        </select>
-                                    </div>
-                                    
-                                    <div class="form-group">
-                                        <label for="colorScheme">
-                                            <i class="fas fa-palette"></i> Color Scheme
-                                        </label>
-                                        <select id="colorScheme" class="form-control">
-                                            <option value="blue">Blue Theme</option>
-                                            <option value="purple">Purple Theme</option>
-                                            <option value="green">Green Theme</option>
-                                            <option value="dark">Dark Theme</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label>Features</label>
-                                    <div class="checkbox-grid">
-                                        <div class="checkbox-group">
-                                            <input type="checkbox" id="featureAuth" checked>
-                                            <label for="featureAuth">Authentication</label>
-                                        </div>
-                                        <div class="checkbox-group">
-                                            <input type="checkbox" id="featureDarkMode" checked>
-                                            <label for="featureDarkMode">Dark Mode</label>
-                                        </div>
-                                        <div class="checkbox-group">
-                                            <input type="checkbox" id="featureOffline" checked>
-                                            <label for="featureOffline">Offline Support</label>
-                                        </div>
-                                        <div class="checkbox-group">
-                                            <input type="checkbox" id="featureNotifications">
-                                            <label for="featureNotifications">Push Notifications</label>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <button class="btn btn-primary btn-lg btn-full" id="generateBtn">
-                                    <i class="fas fa-bolt"></i> Generate App with AI
-                                </button>
-                            </div>
-                            
-                            <!-- Manual Code Tab -->
-                            <div class="tab-content" id="manual-tab">
-                                <div class="form-group">
-                                    <label>
-                                        <i class="fas fa-code"></i> Paste Your Code (HTML/CSS/JS)
-                                    </label>
-                                    <div class="code-tabs">
-                                        <button class="code-tab-btn active" data-code="html">HTML</button>
-                                        <button class="code-tab-btn" data-code="css">CSS</button>
-                                        <button class="code-tab-btn" data-code="js">JavaScript</button>
-                                    </div>
-                                    
-                                    <div class="code-input-container">
-                                        <textarea id="htmlCode" class="code-input active" placeholder="Paste your HTML code here..."></textarea>
-                                        <textarea id="cssCode" class="code-input" placeholder="Paste your CSS code here..."></textarea>
-                                        <textarea id="jsCode" class="code-input" placeholder="Paste your JavaScript code here..."></textarea>
-                                    </div>
-                                    
-                                    <div class="code-actions">
-                                        <button class="btn btn-secondary" id="loadExampleBtn">
-                                            <i class="fas fa-code"></i> Load Example
-                                        </button>
-                                        <button class="btn btn-primary" id="previewCustomBtn">
-                                            <i class="fas fa-eye"></i> Preview Code
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Templates Tab -->
-                            <div class="tab-content" id="templates-tab">
-                                <div class="templates-grid">
-                                    <!-- Templates will be loaded dynamically -->
-                                </div>
-                                <button class="btn btn-outline btn-full" id="loadMoreTemplatesBtn">
-                                    <i class="fas fa-sync"></i> Load More Templates
-                                </button>
-                            </div>
+                        <div class="form-group">
+                            <label for="colorScheme">
+                                <i class="fas fa-palette"></i> Color Scheme
+                            </label>
+                            <select id="colorScheme" class="form-control">
+                                <option value="blue">Blue Theme</option>
+                                <option value="purple">Purple Theme</option>
+                                <option value="green">Green Theme</option>
+                                <option value="dark">Dark Theme</option>
+                            </select>
                         </div>
                     </div>
                     
-                    <!-- Code Editor Section -->
-                    <div class="panel editor-panel">
-                        <div class="panel-header">
-                            <h2><i class="fas fa-edit"></i> Code Editor</h2>
-                            <div class="editor-actions">
-                                <button class="btn btn-sm btn-secondary" id="formatCodeBtn">
-                                    <i class="fas fa-align-left"></i> Format
-                                </button>
-                                <button class="btn btn-sm btn-secondary" id="minifyCodeBtn">
-                                    <i class="fas fa-compress"></i> Minify
-                                </button>
+                    <div class="features-grid">
+                        <div class="feature-item">
+                            <input type="checkbox" id="featureAuth" checked>
+                            <label for="featureAuth">Authentication</label>
+                        </div>
+                        <div class="feature-item">
+                            <input type="checkbox" id="featureDarkMode" checked>
+                            <label for="featureDarkMode">Dark Mode</label>
+                        </div>
+                        <div class="feature-item">
+                            <input type="checkbox" id="featureOffline" checked>
+                            <label for="featureOffline">Offline Support</label>
+                        </div>
+                        <div class="feature-item">
+                            <input type="checkbox" id="featureNotifications">
+                            <label for="featureNotifications">Push Notifications</label>
+                        </div>
+                    </div>
+                    
+                    <button class="btn btn-primary btn-lg" id="generateBtn" style="width: 100%; margin-top: 20px;">
+                        <i class="fas fa-bolt"></i> Generate App with AI
+                    </button>
+                </div>
+                
+                <!-- Export Options -->
+                <div class="panel">
+                    <div class="panel-header">
+                        <h2><i class="fas fa-download"></i> Export App</h2>
+                    </div>
+                    
+                    <div class="export-options">
+                        <div class="export-card">
+                            <div class="export-icon">
+                                <i class="fas fa-file-code"></i>
+                            </div>
+                            <div class="export-info">
+                                <h4>HTML Package</h4>
+                                <p>Complete web app</p>
                             </div>
                         </div>
                         
-                        <div class="editor-container">
-                            <div class="editor-tabs">
-                                <button class="editor-tab active" data-editor="html">index.html</button>
-                                <button class="editor-tab" data-editor="css">style.css</button>
-                                <button class="editor-tab" data-editor="js">app.js</button>
+                        <div class="export-card">
+                            <div class="export-icon">
+                                <i class="fas fa-mobile-alt"></i>
                             </div>
-                            
-                            <div class="editor-content">
-                                <div class="editor-wrapper">
-                                    <div class="line-numbers" id="lineNumbers">
-                                        1
-                                    </div>
-                                    <textarea id="codeEditor" class="code-editor" spellcheck="false"></textarea>
-                                </div>
+                            <div class="export-info">
+                                <h4>PWA</h4>
+                                <p>Progressive Web App</p>
+                            </div>
+                        </div>
+                        
+                        <div class="export-card primary" id="exportApkBtn">
+                            <div class="export-icon">
+                                <i class="fab fa-android"></i>
+                            </div>
+                            <div class="export-info">
+                                <h4>Build Android APK</h4>
+                                <p>Native Android application</p>
                             </div>
                         </div>
                     </div>
                 </div>
                 
-                <!-- Right Panel: Preview & Export -->
-                <div class="right-panel">
-                    <!-- Preview Section -->
-                    <div class="panel preview-panel">
-                        <div class="panel-header">
-                            <h2><i class="fas fa-mobile-alt"></i> Live Preview</h2>
-                            <div class="preview-controls">
-                                <select id="deviceSelector" class="form-control-sm">
-                                    <option value="mobile">Mobile (375x667)</option>
-                                    <option value="tablet">Tablet (768x1024)</option>
-                                    <option value="desktop">Desktop</option>
-                                </select>
-                                <button class="btn btn-sm btn-secondary" id="refreshPreviewBtn">
-                                    <i class="fas fa-redo"></i>
-                                </button>
-                                <button class="btn btn-sm btn-secondary" id="fullscreenPreviewBtn">
-                                    <i class="fas fa-expand"></i>
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <div class="preview-container">
-                            <div class="device-frame" data-device="mobile">
-                                <div class="device-header">
-                                    <div class="device-notch"></div>
-                                    <div class="device-time">12:30</div>
-                                    <div class="device-icons">
-                                        <i class="fas fa-signal"></i>
-                                        <i class="fas fa-wifi"></i>
-                                        <i class="fas fa-battery-full"></i>
-                                    </div>
-                                </div>
-                                <iframe id="previewFrame" class="preview-frame"></iframe>
-                                <div class="device-footer">
-                                    <div class="device-home"></div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="preview-stats">
-                            <div class="stat">
-                                <i class="fas fa-file-code"></i>
-                                <span id="lineCount">0 lines</span>
-                            </div>
-                            <div class="stat">
-                                <i class="fas fa-weight-hanging"></i>
-                                <span id="fileSize">0 KB</span>
-                            </div>
-                            <div class="stat">
-                                <i class="fas fa-bolt"></i>
-                                <span id="loadTime">0ms</span>
-                            </div>
+                <!-- Code Editor -->
+                <div class="panel editor-panel">
+                    <div class="panel-header">
+                        <h2><i class="fas fa-edit"></i> Code Editor</h2>
+                    </div>
+                    
+                    <div class="editor-tabs">
+                        <button class="editor-tab active" data-editor="html">index.html</button>
+                        <button class="editor-tab" data-editor="css">style.css</button>
+                        <button class="editor-tab" data-editor="js">app.js</button>
+                    </div>
+                    
+                    <textarea id="codeEditor" class="code-editor" placeholder="<!-- Your generated code will appear here -->"></textarea>
+                </div>
+            </div>
+            
+            <!-- Right Panel: Live Preview -->
+            <div class="right-panel">
+                <div class="panel preview-panel">
+                    <div class="preview-header">
+                        <h2><i class="fas fa-eye"></i> Live Preview</h2>
+                        <div class="device-selector">
+                            <i class="fas fa-mobile-alt"></i>
+                            <span>Mobile (375x667)</span>
+                            <i class="fas fa-chevron-down"></i>
                         </div>
                     </div>
                     
-                    <!-- Export Section -->
-                    <div class="panel export-panel">
-                        <div class="panel-header">
-                            <h2><i class="fas fa-download"></i> Export App</h2>
-                            <p>Convert your web app to native formats</p>
+                    <div class="device-frame">
+                        <div class="device-notch"></div>
+                        <div class="device-screen">
+                            <iframe id="previewFrame" class="preview-frame"></iframe>
                         </div>
-                        
-                        <div class="export-options">
-                            <div class="export-option">
-                                <div class="export-icon">
-                                    <i class="fas fa-file-code"></i>
-                                </div>
-                                <div class="export-info">
-                                    <h3>HTML Package</h3>
-                                    <p>Complete web app with all files</p>
-                                </div>
-                                <button class="btn btn-outline" id="exportHtmlBtn">
-                                    Download ZIP
-                                </button>
-                            </div>
-                            
-                            <div class="export-option">
-                                <div class="export-icon">
-                                    <i class="fas fa-mobile-alt"></i>
-                                </div>
-                                <div class="export-info">
-                                    <h3>PWA (Progressive Web App)</h3>
-                                    <p>Installable on mobile & desktop</p>
-                                </div>
-                                <button class="btn btn-outline" id="exportPwaBtn">
-                                    Build PWA
-                                </button>
-                            </div>
-                            
-                            <div class="export-option">
-                                <div class="export-icon">
-                                    <i class="fab fa-android"></i>
-                                </div>
-                                <div class="export-info">
-                                    <h3>Android APK</h3>
-                                    <p>Native Android application</p>
-                                </div>
-                                <button class="btn btn-primary" id="exportApkBtn">
-                                    Build APK
-                                </button>
-                            </div>
-                            
-                            <div class="export-option">
-                                <div class="export-icon">
-                                    <i class="fab fa-apple"></i>
-                                </div>
-                                <div class="export-info">
-                                    <h3>iOS App</h3>
-                                    <p>Native iOS application (.ipa)</p>
-                                </div>
-                                <button class="btn btn-secondary" disabled>
-                                    Coming Soon
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <!-- APK Builder Section (Initially Hidden) -->
-                        <div class="apk-builder hidden" id="apkBuilder">
-                            <div class="apk-header">
-                                <h3><i class="fab fa-android"></i> APK Configuration</h3>
-                                <button class="btn btn-sm btn-secondary" id="closeApkBuilderBtn">
-                                    <i class="fas fa-times"></i>
-                                </button>
-                            </div>
-                            
-                            <div class="apk-form">
-                                <div class="form-group">
-                                    <label for="apkPackageName">Package Name</label>
-                                    <input type="text" id="apkPackageName" class="form-control" 
-                                           placeholder="com.company.appname" value="com.appforge.generated">
-                                </div>
-                                
-                                <div class="form-row">
-                                    <div class="form-group">
-                                        <label for="apkVersionName">Version Name</label>
-                                        <input type="text" id="apkVersionName" class="form-control" 
-                                               placeholder="1.0.0" value="1.0.0">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="apkVersionCode">Version Code</label>
-                                        <input type="number" id="apkVersionCode" class="form-control" 
-                                               placeholder="1" value="1">
-                                    </div>
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label>Permissions</label>
-                                    <div class="checkbox-grid">
-                                        <div class="checkbox-group">
-                                            <input type="checkbox" id="permInternet" checked>
-                                            <label for="permInternet">Internet</label>
-                                        </div>
-                                        <div class="checkbox-group">
-                                            <input type="checkbox" id="permStorage">
-                                            <label for="permStorage">Storage</label>
-                                        </div>
-                                        <div class="checkbox-group">
-                                            <input type="checkbox" id="permCamera">
-                                            <label for="permCamera">Camera</label>
-                                        </div>
-                                        <div class="checkbox-group">
-                                            <input type="checkbox" id="permLocation">
-                                            <label for="permLocation">Location</label>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="apk-actions">
-                                    <button class="btn btn-secondary" id="cancelApkBtn">
-                                        Cancel
-                                    </button>
-                                    <button class="btn btn-primary" id="buildApkBtn">
-                                        <i class="fas fa-hammer"></i> Build APK
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
+                        <div class="device-home"></div>
                     </div>
                 </div>
             </div>
         </div>
     </main>
 
-    <!-- Footer -->
-    <footer>
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-brand">
-                    <div class="logo">
-                        <i class="fas fa-robot"></i>
-                        <span>AppForge AI</span>
-                    </div>
-                    <p class="footer-tagline">From Imagination to Installation</p>
-                    <p class="copyright">&copy; 2024 AppForge AI. All rights reserved.</p>
-                </div>
-                
-                <div class="footer-links">
-                    <div class="footer-section">
-                        <h3>Product</h3>
-                        <ul>
-                            <li><a href="#">Features</a></li>
-                            <li><a href="#">Templates</a></li>
-                            <li><a href="#">Pricing</a></li>
-                            <li><a href="#">API</a></li>
-                        </ul>
-                    </div>
-                    
-                    <div class="footer-section">
-                        <h3>Resources</h3>
-                        <ul>
-                            <li><a href="#">Documentation</a></li>
-                            <li><a href="#">Tutorials</a></li>
-                            <li><a href="#">Blog</a></li>
-                            <li><a href="#">Community</a></li>
-                        </ul>
-                    </div>
-                    
-                    <div class="footer-section">
-                        <h3>Company</h3>
-                        <ul>
-                            <li><a href="#">About</a></li>
-                            <li><a href="#">Contact</a></li>
-                            <li><a href="#">Privacy</a></li>
-                            <li><a href="#">Terms</a></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="footer-bottom">
-                <div class="social-links">
-                    <a href="#" class="social-link"><i class="fab fa-github"></i></a>
-                    <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
-                    <a href="#" class="social-link"><i class="fab fa-discord"></i></a>
-                    <a href="#" class="social-link"><i class="fab fa-youtube"></i></a>
-                </div>
-                <p class="footer-note">
-                    Powered by Deep-Seek Technology | Built with ❤️ by Pierre
-                </p>
-            </div>
-        </div>
-    </footer>
-
-    <!-- Modals -->
+    <!-- AI System Modal -->
     <div class="modal" id="aiSystemModal">
         <div class="modal-content">
             <div class="modal-header">
                 <h2><i class="fas fa-robot"></i> AI System Prompt</h2>
-                <button class="modal-close" id="closeAiModalBtn">
-                    <i class="fas fa-times"></i>
-                </button>
+                <button class="modal-close" id="closeAiModal">&times;</button>
             </div>
-            <div class="modal-body">
-                <pre id="systemPromptText"></pre>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" id="copyPromptBtn">
-                    <i class="fas fa-copy"></i> Copy Prompt
-                </button>
-                <button class="btn btn-primary" id="applyPromptBtn">
-                    <i class="fas fa-check"></i> Apply to Settings
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal" id="apkBuildModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2><i class="fab fa-android"></i> Building APK</h2>
-            </div>
-            <div class="modal-body">
-                <div class="build-progress">
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="apkProgress"></div>
-                    </div>
-                    <div class="build-steps" id="buildSteps">
-                        <!-- Steps will be added here -->
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" id="cancelBuildBtn" style="display: none;">
-                    Cancel Build
-                </button>
-            </div>
+            <div class="system-prompt" id="systemPromptText"></div>
         </div>
     </div>
 
     <!-- Toast Container -->
     <div class="toast-container" id="toastContainer"></div>
 
-    <!-- JavaScript Files - Load utils.js first as other modules depend on it -->
+    <!-- JavaScript Files -->
     <script src="js/utils.js"></script>
     <script src="js/app.js"></script>
     <script src="js/ui-manager.js"></script>
