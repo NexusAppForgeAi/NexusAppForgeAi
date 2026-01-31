@@ -15,10 +15,7 @@ const urlsToCache = [
   '/NexusAppForgeAi/js/template-manager.js',
   '/NexusAppForgeAi/js/app.js',
   '/NexusAppForgeAi/manifest.json',
-  '/NexusAppForgeAi/icons/favicon.ico',
-  '/NexusAppForgeAi/icons/icon-192.png',
-  '/NexusAppForgeAi/icons/icon-512.png',
-  '/NexusAppForgeAi/icons/apple-touch-icon.png'
+  '/NexusAppForgeAi/assets/icons/app-icon.png'
 ];
 
 // Install event
@@ -88,8 +85,8 @@ self.addEventListener('push', event => {
   const title = 'AppForge AI';
   const options = {
     body: event.data ? event.data.text() : 'New notification from AppForge',
-    icon: 'icons/icon-192.png',
-    badge: 'icons/icon-192.png'
+    icon: 'assets/icons/app-icon.png',
+    badge: 'assets/icons/app-icon.png'
   };
   
   event.waitUntil(
@@ -105,15 +102,3 @@ self.addEventListener('notificationclick', event => {
     clients.openWindow('/NexusAppForgeAi/')
   );
 });
-
-// Handle background sync
-self.addEventListener('sync', event => {
-  if (event.tag === 'sync-forms') {
-    event.waitUntil(syncForms());
-  }
-});
-
-async function syncForms() {
-  // Background sync logic here
-  console.log('Background sync triggered');
-}
