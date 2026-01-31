@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AppForge Admin - SuperAdmin Dashboard</title>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        :root {
+            --color-primary: #FF3366;
+            --color-secondary: #3366FF;
+            --color-accent: #9933FF;
+            --color-success: #4CAF50;
+            --color-warning: #FF9800;
+            --color-error: #f44336;
+            --color-info: #00D1FF;
+            
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #14141f;
+            --bg-tertiary: #1e1e2e;
+            --bg-card: rgba(30, 30, 46, 0.95);
+            
+            --text-primary: #ffffff;
+            --text-secondary: #94A3B8;
+            --text-muted: #64748B;
+            
+            --border-color: rgba(255, 255, 255, 0.1);
+            --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
+            
+            --radius-md: 12px;
+            --radius-lg: 16px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        /* Login Screen */
+        .login-screen {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, #1a0a2e 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .login-screen.hidden { display: none; }
+
+        .login-box {
+            background: var(--bg-card);
+            padding: 48px;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-color);
+            width: 100%;
+            max-width: 420px;
+            text-align: center;
+        }
+
+        .login-box .logo {
+            font-size: 48px;
+            color: var(--color-primary);
+            margin-bottom: 16px;
+        }
+
+        .login-box h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .login-box p {
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+        }
+
+        .login-box input {
+            width: 100%;
+            padding: 16px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            color: var(--text-primary);
+            font-size: 15px;
+            margin-bottom: 16px;
+        }
+
+        .login-box input:focus {
+            outline: none;
+            border-color: var(--color-secondary);
+        }
+
+        .login-box button {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+            border: none;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .login-box button:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Admin Layout */
+        .admin-layout {
+            display: none;
+            min-height: 100vh;
+        }
+
+        .admin-layout.active { display: flex; }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            padding: 24px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .sidebar-header .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .sidebar-header .brand i {
+            color: var(--color-primary);
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 16px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: var(--radius-md);
+            margin-bottom: 4px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            background: var(--color-secondary);
+            color: white;
+        }
+
+        .nav-item i {
+            width: 24px;
+            text-align: center;
+        }
+
+        .sidebar-footer {
+            padding: 16px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .admin-user {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .admin-user img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--bg-tertiary);
+        }
+
+        .admin-user-info {
+            flex: 1;
+        }
+
+        .admin-user-info .name {
+            font-weight: 600;
+        }
+
+        .admin-user-info .role {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .top-bar {
+            height: 70px;
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 32px;
+        }
+
+        .top-bar h2 {
+            font-size: 24px;
+        }
+
+        .top-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .top-btn {
+            padding: 10px 20px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+
+        .top-btn:hover {
+            background: var(--border-color);
+        }
+
+        .content-area {
+            flex: 1;
+            padding: 32px;
+            overflow-y: auto;
+        }
+
+        /* Dashboard Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            padding: 24px;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-color);
+        }
+
+        .stat-card .label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-card .value {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .stat-card .change {
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .stat-card .change.positive { color: var(--color-success); }
+        .stat-card .change.negative { color: var(--color-error); }
+
+        /* Charts Section */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .chart-card {
+            background: var(--bg-card);
+            padding: 24px;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-color);
+        }
+
+        .chart-card h3 {
+            font-size: 16px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .chart-container {
+            height: 300px;
+        }
+
+        /* Tables */
+        .data-table {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+
+        .table-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .table-header h3 {
+            font-size: 16px;
+        }
+
+        .table-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .table-search {
+            padding: 8px 16px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 16px 24px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+        }
+
+        td {
+            font-size: 14px;
+        }
+
+        tr:hover {
+            background: var(--bg-hover);
+        }
+
+        .user-cell {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--color-secondary), var(--color-accent));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-free { background: var(--color-success); color: white; }
+        .badge-pro { background: var(--color-warning); color: #000; }
+        .badge-team { background: var(--color-info); color: white; }
+        .badge-admin { background: var(--color-primary); color: white; }
+
+        .action-btns {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .action-btn:hover {
+            background: var(--color-secondary);
+            color: white;
+        }
+
+        /* Gallery Grid */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 24px;
+        }
+
+        .gallery-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+
+        .gallery-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .gallery-preview {
+            height: 180px;
+            background: linear-gradient(135deg, var(--bg-tertiary), var(--bg-secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .gallery-preview iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .gallery-badge {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            padding: 6px 12px;
+            background: var(--color-primary);
+            color: white;
+            font-size: 11px;
+            font-weight: 600;
+            border-radius: 20px;
+        }
+
+        .gallery-info {
+            padding: 20px;
+        }
+
+        .gallery-info h4 {
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+
+        .gallery-info p {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+
+        .gallery-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .gallery-author {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .gallery-stats {
+            display: flex;
+            gap: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .gallery-stats span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Section visibility */
+        .section { display: none; }
+        .section.active { display: block; }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .charts-grid { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .stats-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Screen -->
+    <div class="login-screen" id="loginScreen">
+        <div class="login-box">
+            <div class="logo"><i class="fas fa-hammer"></i></div>
+            <h1>AppForge Admin</h1>
+            <p>SuperAdmin Dashboard</p>
+            <input type="email" id="adminEmail" placeholder="Email" value="">
+            <input type="password" id="adminPassword" placeholder="Password">
+            <button onclick="AdminAuth.login()">
+                <i class="fas fa-sign-in-alt"></i> Sign In
+            </button>
+        </div>
+    </div>
+
+    <!-- Admin Layout -->
+    <div class="admin-layout" id="adminLayout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="brand">
+                    <i class="fas fa-hammer"></i>
+                    <span>AppForge</span>
+                </div>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a class="nav-item active" onclick="AdminApp.showSection('dashboard')">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a class="nav-item" onclick="AdminApp.showSection('users')">
+                    <i class="fas fa-users"></i>
+                    <span>Users</span>
+                </a>
+                <a class="nav-item" onclick="AdminApp.showSection('gallery')">
+                    <i class="fas fa-images"></i>
+                    <span>App Gallery</span>
+                </a>
+                <a class="nav-item" onclick="AdminApp.showSection('analytics')">
+                    <i class="fas fa-chart-pie"></i>
+                    <span>Analytics</span>
+                </a>
+                <a class="nav-item" onclick="AdminApp.showSection('revenue')">
+                    <i class="fas fa-dollar-sign"></i>
+                    <span>Revenue</span>
+                </a>
+                <a class="nav-item" onclick="AdminApp.showSection('settings')">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </a>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <div class="admin-user">
+                    <div class="user-avatar">P</div>
+                    <div class="admin-user-info">
+                        <div class="name">Pierre Godin</div>
+                        <div class="role">SuperAdmin</div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-bar">
+                <h2 id="pageTitle">Dashboard</h2>
+                <div class="top-actions">
+                    <button class="top-btn" onclick="AdminApp.refreshData()">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                    <button class="top-btn" onclick="AdminAuth.logout()">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
+            </header>
+
+            <div class="content-area">
+                <!-- Dashboard Section -->
+                <div class="section active" id="dashboardSection">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="label">Total Users</div>
+                            <div class="value" id="totalUsers">0</div>
+                            <div class="change positive">
+                                <i class="fas fa-arrow-up"></i>
+                                <span id="userGrowth">+0%</span> this month
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="label">Apps Created</div>
+                            <div class="value" id="totalApps">0</div>
+                            <div class="change positive">
+                                <i class="fas fa-arrow-up"></i>
+                                <span id="appGrowth">+0%</span> this month
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="label">MRR</div>
+                            <div class="value" id="totalRevenue">$0</div>
+                            <div class="change positive">
+                                <i class="fas fa-arrow-up"></i>
+                                <span id="revenueGrowth">+0%</span> this month
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="label">Active Now</div>
+                            <div class="value" id="activeUsers">0</div>
+                            <div class="change">
+                                <i class="fas fa-circle" style="color: #4CAF50; font-size: 8px;"></i>
+                                <span>Real-time</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="charts-grid">
+                        <div class="chart-card">
+                            <h3><i class="fas fa-chart-area"></i> User Growth</h3>
+                            <div class="chart-container">
+                                <canvas id="userChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-card">
+                            <h3><i class="fas fa-chart-pie"></i> Plan Distribution</h3>
+                            <div class="chart-container">
+                                <canvas id="planChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Users Section -->
+                <div class="section" id="usersSection">
+                    <div class="data-table">
+                        <div class="table-header">
+                            <h3><i class="fas fa-users"></i> All Users</h3>
+                            <div class="table-actions">
+                                <input type="text" class="table-search" placeholder="Search users..." id="userSearch">
+                                <button class="top-btn" onclick="AdminApp.exportUsers()">
+                                    <i class="fas fa-download"></i> Export
+                                </button>
+                            </div>
+                        </div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>User</th>
+                                    <th>Plan</th>
+                                    <th>Apps Created</th>
+                                    <th>Joined</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="usersTableBody">
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Gallery Section -->
+                <div class="section" id="gallerySection">
+                    <div class="table-header" style="margin-bottom: 24px;">
+                        <h3><i class="fas fa-images"></i> Featured Apps Gallery</h3>
+                        <div class="table-actions">
+                            <select class="table-search" id="galleryFilter">
+                                <option value="all">All Apps</option>
+                                <option value="featured">Featured</option>
+                                <option value="pending">Pending Review</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="gallery-grid" id="galleryGrid">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <!-- Analytics Section -->
+                <div class="section" id="analyticsSection">
+                    <div class="charts-grid">
+                        <div class="chart-card">
+                            <h3><i class="fas fa-chart-bar"></i> AI Generations by Provider</h3>
+                            <div class="chart-container">
+                                <canvas id="providerChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-card">
+                            <h3><i class="fas fa-chart-line"></i> Export Activity</h3>
+                            <div class="chart-container">
+                                <canvas id="exportChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Revenue Section -->
+                <div class="section" id="revenueSection">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="label">This Month</div>
+                            <div class="value" id="monthRevenue">$0</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="label">Pro Subscribers</div>
+                            <div class="value" id="proCount">0</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="label">Team Subscribers</div>
+                            <div class="value" id="teamCount">0</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="label">Churn Rate</div>
+                            <div class="value" id="churnRate">0%</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Settings Section -->
+                <div class="section" id="settingsSection">
+                    <div class="chart-card">
+                        <h3><i class="fas fa-cog"></i> Platform Settings</h3>
+                        <div style="padding: 20px;">
+                            <p>Admin settings coming soon...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Admin Authentication
+        const AdminAuth = {
+            credentials: {
+                email: 'nexusappforgeai@gmail.com',
+                password: 'Pierre007007%%%'
+            },
+
+            isLoggedIn: false,
+
+            login() {
+                const email = document.getElementById('adminEmail').value;
+                const password = document.getElementById('adminPassword').value;
+
+                if (email === this.credentials.email && password === this.credentials.password) {
+                    this.isLoggedIn = true;
+                    document.getElementById('loginScreen').classList.add('hidden');
+                    document.getElementById('adminLayout').classList.add('active');
+                    AdminApp.init();
+                    localStorage.setItem('appforge_admin_session', 'true');
+                } else {
+                    alert('Invalid credentials');
+                }
+            },
+
+            logout() {
+                this.isLoggedIn = false;
+                localStorage.removeItem('appforge_admin_session');
+                location.reload();
+            },
+
+            checkSession() {
+                if (localStorage.getItem('appforge_admin_session') === 'true') {
+                    this.isLoggedIn = true;
+                    document.getElementById('loginScreen').classList.add('hidden');
+                    document.getElementById('adminLayout').classList.add('active');
+                    AdminApp.init();
+                }
+            }
+        };
+
+        // Admin Application
+        const AdminApp = {
+            charts: {},
+
+            init() {
+                this.loadData();
+                this.initCharts();
+                this.renderUsers();
+                this.renderGallery();
+            },
+
+            loadData() {
+                // Load from localStorage (in production, this would be from your backend)
+                const users = JSON.parse(localStorage.getItem('appforge_users') || '[]');
+                const apps = JSON.parse(localStorage.getItem('appforge_gallery') || '[]');
+
+                document.getElementById('totalUsers').textContent = users.length || 1247;
+                document.getElementById('totalApps').textContent = apps.length || 3842;
+                document.getElementById('totalRevenue').textContent = '$' + (users.filter(u => u.tier !== 'free').length * 19 + 247).toLocaleString();
+                document.getElementById('activeUsers').textContent = Math.floor(Math.random() * 50) + 23;
+            },
+
+            initCharts() {
+                // User Growth Chart
+                const userCtx = document.getElementById('userChart').getContext('2d');
+                this.charts.user = new Chart(userCtx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                        datasets: [{
+                            label: 'Users',
+                            data: [450, 620, 780, 950, 1100, 1247],
+                            borderColor: '#3366FF',
+                            backgroundColor: 'rgba(51, 102, 255, 0.1)',
+                            fill: true,
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94A3B8' } },
+                            x: { grid: { display: false }, ticks: { color: '#94A3B8' } }
+                        }
+                    }
+                });
+
+                // Plan Distribution Chart
+                const planCtx = document.getElementById('planChart').getContext('2d');
+                this.charts.plan = new Chart(planCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Free', 'Pro', 'Team'],
+                        datasets: [{
+                            data: [1100, 127, 20],
+                            backgroundColor: ['#4CAF50', '#FF9800', '#00D1FF'],
+                            borderWidth: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: { color: '#94A3B8', padding: 20 }
+                            }
+                        }
+                    }
+                });
+
+                // Provider Chart
+                const providerCtx = document.getElementById('providerChart').getContext('2d');
+                this.charts.provider = new Chart(providerCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Puter.js', 'OpenAI', 'Claude', 'Gemini', 'DeepSeek'],
+                        datasets: [{
+                            label: 'Generations',
+                            data: [2847, 523, 312, 189, 98],
+                            backgroundColor: ['#3366FF', '#10A37F', '#CC785C', '#4285F4', '#1E3A8A']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94A3B8' } },
+                            x: { grid: { display: false }, ticks: { color: '#94A3B8' } }
+                        }
+                    }
+                });
+
+                // Export Chart
+                const exportCtx = document.getElementById('exportChart').getContext('2d');
+                this.charts.export = new Chart(exportCtx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                        datasets: [
+                            { label: 'HTML', data: [120, 145, 132, 167, 189, 234, 198], borderColor: '#E44D26', tension: 0.4 },
+                            { label: 'PWA', data: [45, 52, 48, 61, 73, 89, 76], borderColor: '#5A0FC8', tension: 0.4 },
+                            { label: 'APK', data: [12, 15, 18, 22, 28, 35, 31], borderColor: '#3DDC84', tension: 0.4 }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { labels: { color: '#94A3B8' } } },
+                        scales: {
+                            y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94A3B8' } },
+                            x: { grid: { display: false }, ticks: { color: '#94A3B8' } }
+                        }
+                    }
+                });
+            },
+
+            renderUsers() {
+                const tbody = document.getElementById('usersTableBody');
+                const users = JSON.parse(localStorage.getItem('appforge_users') || '[]');
+                
+                // Add some sample users if none exist
+                const sampleUsers = users.length > 0 ? users : [
+                    { id: 1, name: 'John Doe', email: 'john@example.com', tier: 'pro', apps: 12, joined: '2024-01-15' },
+                    { id: 2, name: 'Jane Smith', email: 'jane@example.com', tier: 'free', apps: 3, joined: '2024-01-20' },
+                    { id: 3, name: 'Mike Johnson', email: 'mike@example.com', tier: 'team', apps: 45, joined: '2024-01-10' },
+                    { id: 4, name: 'Sarah Wilson', email: 'sarah@example.com', tier: 'pro', apps: 28, joined: '2024-01-25' },
+                    { id: 5, name: 'David Brown', email: 'david@example.com', tier: 'free', apps: 7, joined: '2024-02-01' }
+                ];
+
+                tbody.innerHTML = sampleUsers.map(user => `
+                    <tr>
+                        <td>
+                            <div class="user-cell">
+                                <div class="user-avatar">${user.name.charAt(0)}</div>
+                                <div>
+                                    <div style="font-weight: 500;">${user.name}</div>
+                                    <div style="font-size: 12px; color: var(--text-muted);">${user.email}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="badge badge-${user.tier}">${user.tier.toUpperCase()}</span></td>
+                        <td>${user.apps}</td>
+                        <td>${user.joined}</td>
+                        <td>
+                            <div class="action-btns">
+                                <button class="action-btn" title="View"><i class="fas fa-eye"></i></button>
+                                <button class="action-btn" title="Edit"><i class="fas fa-edit"></i></button>
+                                <button class="action-btn" title="Delete"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                `).join('');
+            },
+
+            renderGallery() {
+                const grid = document.getElementById('galleryGrid');
+                const apps = JSON.parse(localStorage.getItem('appforge_gallery') || '[]');
+                
+                // Sample gallery items
+                const sampleApps = apps.length > 0 ? apps : [
+                    { id: 1, name: 'TaskMaster Pro', author: 'Alex Chen', views: 1247, likes: 89, featured: true, code: '<h1 style="color:#3366FF">TaskMaster</h1>' },
+                    { id: 2, name: 'Foodie Finder', author: 'Maria Garcia', views: 892, likes: 67, featured: true, code: '<h1 style="color:#E74C3C">Foodie</h1>' },
+                    { id: 3, name: 'FitTrack Dashboard', author: 'Tom Wilson', views: 654, likes: 45, featured: false, code: '<h1 style="color:#27AE60">FitTrack</h1>' },
+                    { id: 4, name: 'CryptoWatch', author: 'Lisa Park', views: 1523, likes: 112, featured: true, code: '<h1 style="color:#F39C12">Crypto</h1>' },
+                    { id: 5, name: 'Travel Journal', author: 'James Miller', views: 432, likes: 28, featured: false, code: '<h1 style="color:#9B59B6">Travel</h1>' },
+                    { id: 6, name: 'Music Streamer', author: 'Emma Davis', views: 987, likes: 76, featured: false, code: '<h1 style="color:#1ABC9C">Music</h1>' }
+                ];
+
+                grid.innerHTML = sampleApps.map(app => `
+                    <div class="gallery-card">
+                        <div class="gallery-preview">
+                            ${app.featured ? '<span class="gallery-badge"><i class="fas fa-star"></i> Featured</span>' : ''}
+                            <div style="font-size: 48px; color: var(--text-muted);">
+                                <i class="fas fa-mobile-alt"></i>
+                            </div>
+                        </div>
+                        <div class="gallery-info">
+                            <h4>${app.name}</h4>
+                            <p>by ${app.author}</p>
+                            <div class="gallery-meta">
+                                <div class="gallery-author">
+                                    <i class="fas fa-user-circle"></i>
+                                    ${app.author}
+                                </div>
+                                <div class="gallery-stats">
+                                    <span><i class="fas fa-eye"></i> ${app.views}</span>
+                                    <span><i class="fas fa-heart"></i> ${app.likes}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            },
+
+            showSection(sectionName) {
+                // Update nav
+                document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+                event.target.closest('.nav-item').classList.add('active');
+
+                // Update sections
+                document.querySelectorAll('.section').forEach(section => section.classList.remove('active'));
+                document.getElementById(sectionName + 'Section').classList.add('active');
+
+                // Update title
+                const titles = {
+                    dashboard: 'Dashboard',
+                    users: 'User Management',
+                    gallery: 'App Gallery',
+                    analytics: 'Analytics',
+                    revenue: 'Revenue',
+                    settings: 'Settings'
+                };
+                document.getElementById('pageTitle').textContent = titles[sectionName];
+            },
+
+            refreshData() {
+                this.loadData();
+                this.renderUsers();
+                this.renderGallery();
+                UIManager?.toast('Data refreshed', 'success');
+            },
+
+            exportUsers() {
+                const users = JSON.parse(localStorage.getItem('appforge_users') || '[]');
+                const csv = this.convertToCSV(users);
+                const blob = new Blob([csv], { type: 'text/csv' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'users_export.csv';
+                a.click();
+            },
+
+            convertToCSV(data) {
+                if (data.length === 0) return '';
+                const headers = Object.keys(data[0]);
+                const rows = data.map(obj => headers.map(h => obj[h]).join(','));
+                return [headers.join(','), ...rows].join('\n');
+            }
+        };
+
+        // Check session on load
+        document.addEventListener('DOMContentLoaded', () => {
+            AdminAuth.checkSession();
+        });
+    </script>
+</body>
+</html>

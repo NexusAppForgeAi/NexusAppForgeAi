@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AppForge User Guide</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-primary: #FF3366;
+            --color-secondary: #3366FF;
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #14141f;
+            --bg-card: rgba(30, 30, 46, 0.95);
+            --text-primary: #ffffff;
+            --text-secondary: #94A3B8;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --radius-lg: 16px;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        header {
+            text-align: center;
+            padding: 60px 0;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 40px;
+        }
+        
+        header h1 {
+            font-size: 48px;
+            background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 16px;
+        }
+        
+        header p {
+            font-size: 20px;
+            color: var(--text-secondary);
+        }
+        
+        h2 {
+            font-size: 32px;
+            margin: 48px 0 24px;
+            color: var(--color-secondary);
+        }
+        
+        h3 {
+            font-size: 24px;
+            margin: 32px 0 16px;
+        }
+        
+        p {
+            margin-bottom: 16px;
+            color: var(--text-secondary);
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin: 32px 0;
+        }
+        
+        .feature-card {
+            background: var(--bg-card);
+            padding: 24px;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-color);
+        }
+        
+        .feature-card i {
+            font-size: 32px;
+            color: var(--color-primary);
+            margin-bottom: 16px;
+        }
+        
+        .feature-card h4 {
+            font-size: 18px;
+            margin-bottom: 12px;
+        }
+        
+        .steps {
+            counter-reset: step;
+            margin: 32px 0;
+        }
+        
+        .step {
+            display: flex;
+            gap: 24px;
+            margin-bottom: 32px;
+            padding: 24px;
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-color);
+        }
+        
+        .step::before {
+            counter-increment: step;
+            content: counter(step);
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        
+        .step-content h4 {
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+        
+        .tip {
+            background: rgba(76, 175, 80, 0.1);
+            border-left: 4px solid #4CAF50;
+            padding: 16px 20px;
+            margin: 24px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .tip i {
+            color: #4CAF50;
+            margin-right: 8px;
+        }
+        
+        .warning {
+            background: rgba(255, 152, 0, 0.1);
+            border-left: 4px solid #FF9800;
+            padding: 16px 20px;
+            margin: 24px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .warning i {
+            color: #FF9800;
+            margin-right: 8px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 24px 0;
+        }
+        
+        th, td {
+            padding: 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        th {
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+        
+        .pricing-table th {
+            background: var(--bg-secondary);
+        }
+        
+        .check { color: #4CAF50; }
+        .cross { color: #f44336; }
+        
+        footer {
+            text-align: center;
+            padding: 60px 0;
+            border-top: 1px solid var(--border-color);
+            margin-top: 60px;
+        }
+        
+        footer a {
+            color: var(--color-secondary);
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-hammer"></i> AppForge User Guide</h1>
+            <p>From Imagination to Installation - Complete Documentation</p>
+        </header>
+
+        <h2><i class="fas fa-rocket"></i> Getting Started</h2>
+        <p>Welcome to AppForge - the most powerful AI-driven app builder. This guide will help you create stunning web apps, PWAs, and mobile apps in minutes.</p>
+
+        <div class="steps">
+            <div class="step">
+                <div class="step-content">
+                    <h4>Describe Your App</h4>
+                    <p>Start by describing what you want to build in the AI Generator. Be specific about features, design, and functionality. The more details you provide, the better the result!</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-content">
+                    <h4>Generate with AI</h4>
+                    <p>Click "Generate App with AI" and watch as our Deep-Seek Technology transforms your description into a complete, functional app.</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-content">
+                    <h4>Preview & Edit</h4>
+                    <p>See your app in the live preview. Edit the code directly in our powerful editor with syntax highlighting and AI debugging.</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-content">
+                    <h4>Export & Share</h4>
+                    <p>Export as HTML, PWA, or APK. Share with the community or deploy to production!</p>
+                </div>
+            </div>
+        </div>
+
+        <h2><i class="fas fa-magic"></i> AI Features</h2>
+        
+        <div class="feature-grid">
+            <div class="feature-card">
+                <i class="fas fa-robot"></i>
+                <h4>Text-to-App</h4>
+                <p>Describe your app in natural language and let AI build it for you.</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-microphone"></i>
+                <h4>Voice-to-App</h4>
+                <p>Speak your ideas and watch them become reality. Perfect for brainstorming!</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-image"></i>
+                <h4>Image-to-App</h4>
+                <p>Upload a sketch or mockup and AI will convert it to a working app.</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-bug"></i>
+                <h4>AI Debugger</h4>
+                <p>Automatically find and fix issues in your code with intelligent suggestions.</p>
+            </div>
+        </div>
+
+        <h2><i class="fas fa-crown"></i> Pricing Plans</h2>
+        
+        <table class="pricing-table">
+            <thead>
+                <tr>
+                    <th>Feature</th>
+                    <th>Free</th>
+                    <th>Pro ($19/mo)</th>
+                    <th>Team ($99/mo)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>AI Generations</td>
+                    <td class="check"><i class="fas fa-check"></i> Unlimited</td>
+                    <td class="check"><i class="fas fa-check"></i> Unlimited</td>
+                    <td class="check"><i class="fas fa-check"></i> Unlimited</td>
+                </tr>
+                <tr>
+                    <td>HTML Export</td>
+                    <td class="check"><i class="fas fa-check"></i> Unlimited</td>
+                    <td class="check"><i class="fas fa-check"></i> Unlimited</td>
+                    <td class="check"><i class="fas fa-check"></i> Unlimited</td>
+                </tr>
+                <tr>
+                    <td>PWA Export</td>
+                    <td>3/month</td>
+                    <td class="check"><i class="fas fa-check"></i> Unlimited</td>
+                    <td class="check"><i class="fas fa-check"></i> Unlimited</td>
+                </tr>
+                <tr>
+                    <td>APK Build</td>
+                    <td class="cross"><i class="fas fa-times"></i></td>
+                    <td>10/month</td>
+                    <td class="check"><i class="fas fa-check"></i> Unlimited</td>
+                </tr>
+                <tr>
+                    <td>Remove Branding</td>
+                    <td class="cross"><i class="fas fa-times"></i></td>
+                    <td class="check"><i class="fas fa-check"></i></td>
+                    <td class="check"><i class="fas fa-check"></i></td>
+                </tr>
+                <tr>
+                    <td>Community Gallery</td>
+                    <td class="check"><i class="fas fa-check"></i></td>
+                    <td class="check"><i class="fas fa-check"></i></td>
+                    <td class="check"><i class="fas fa-check"></i></td>
+                </tr>
+                <tr>
+                    <td>Achievements</td>
+                    <td class="check"><i class="fas fa-check"></i></td>
+                    <td class="check"><i class="fas fa-check"></i></td>
+                    <td class="check"><i class="fas fa-check"></i></td>
+                </tr>
+                <tr>
+                    <td>Priority Support</td>
+                    <td class="cross"><i class="fas fa-times"></i></td>
+                    <td class="check"><i class="fas fa-check"></i></td>
+                    <td class="check"><i class="fas fa-check"></i></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2><i class="fas fa-trophy"></i> Achievements</h2>
+        <p>Unlock achievements as you build! Collect badges and show off your progress.</p>
+        
+        <div class="tip">
+            <i class="fas fa-lightbulb"></i>
+            <strong>Pro Tip:</strong> Try building apps at different times of day to unlock the "Night Owl" achievement!
+        </div>
+
+        <h2><i class="fas fa-globe"></i> Community Gallery</h2>
+        <p>Share your creations with the world! Browse apps made by other builders, get inspired, and remix them to make them your own.</p>
+
+        <div class="warning">
+            <i class="fas fa-exclamation-triangle"></i>
+            <strong>Note:</strong> All submitted apps are reviewed before appearing in the featured section.
+        </div>
+
+        <h2><i class="fas fa-code-branch"></i> Export Options</h2>
+        
+        <h3>HTML Export</h3>
+        <p>Download a single HTML file containing your entire app. Perfect for hosting on GitHub Pages, Netlify, or any static host.</p>
+        
+        <h3>PWA Export</h3>
+        <p>Get a complete Progressive Web App package with manifest.json and service worker. Installable on any device!</p>
+        
+        <h3>APK Build (Pro)</h3>
+        <p>Convert your web app to a native Android APK. Upload to Google Play Store or distribute directly.</p>
+
+        <h2><i class="fas fa-cog"></i> AI Providers</h2>
+        <p>AppForge supports multiple AI providers. Choose the one that works best for you:</p>
+        <ul style="margin: 16px 0; padding-left: 24px; color: var(--text-secondary);">
+            <li><strong>Puter.js (Grok)</strong> - Free, no API key needed</li>
+            <li><strong>OpenAI (GPT-4)</strong> - Most powerful, requires your API key</li>
+            <li><strong>Claude (Anthropic)</strong> - Excellent for complex apps</li>
+            <li><strong>Google Gemini</strong> - Fast and reliable</li>
+            <li><strong>DeepSeek</strong> - Open source alternative</li>
+        </ul>
+
+        <h2><i class="fas fa-question-circle"></i> FAQ</h2>
+        
+        <h3>Is AppForge really free?</h3>
+        <p>Yes! The free tier includes unlimited AI generations and HTML exports. Upgrade to Pro for APK builds and more features.</p>
+        
+        <h3>Who owns the apps I create?</h3>
+        <p>You do! All apps you create are 100% yours. We don't claim any ownership.</p>
+        
+        <h3>Can I sell apps I make with AppForge?</h3>
+        <p>Absolutely! Apps created with AppForge are yours to sell, distribute, or monetize however you like.</p>
+        
+        <h3>How do I get featured in the gallery?</h3>
+        <p>Submit your app through the "Submit Your App" button. Our team reviews submissions and features the best ones!</p>
+
+        <footer>
+            <p>Built with <i class="fas fa-heart" style="color: #FF3366;"></i> by Pierre Godin</p>
+            <p><a href="../index.html"><i class="fas fa-arrow-left"></i> Back to AppForge</a></p>
+        </footer>
+    </div>
+</body>
+</html>
