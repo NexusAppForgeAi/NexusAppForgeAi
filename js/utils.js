@@ -1,58 +1,74 @@
-// js/utils.js
-window.utils = {
-    debounce: function(func, wait) {
+// AppForge Utility Functions
+
+const Utils = {
+    // Generate unique ID
+    generateId() {
+        return Date.now().toString(36) + Math.random().toString(36).substr(2);
+    },
+
+    // Format date
+    formatDate(date) {
+        return new Date(date).toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric'
+        });
+    },
+
+    // Format file size
+    formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    },
+
+    // Debounce function
+    debounce(func, wait) {
         let timeout;
-        return function(...args) {
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
             clearTimeout(timeout);
-            timeout = setTimeout(() => func.apply(this, args), wait);
+            timeout = setTimeout(later, wait);
         };
     },
 
-    throttle: function(func, limit) {
+    // Throttle function
+    throttle(func, limit) {
         let inThrottle;
-        return function() {
-            const args = arguments;
-            const context = this;
+        return function(...args) {
             if (!inThrottle) {
-                func.apply(context, args);
+                func.apply(this, args);
                 inThrottle = true;
                 setTimeout(() => inThrottle = false, limit);
             }
         };
     },
 
-    getStorage: function(key) {
-        try {
-            const item = localStorage.getItem(key);
-            return item ? JSON.parse(item) : null;
-        } catch (e) {
-            console.error('Storage get error:', e);
-            return null;
-        }
+    // Deep clone object
+    deepClone(obj) {
+        return JSON.parse(JSON.stringify(obj));
     },
 
-    setStorage: function(key, value) {
-        try {
-            localStorage.setItem(key, JSON.stringify(value));
-            return true;
-        } catch (e) {
-            console.error('Storage set error:', e);
-            return false;
-        }
+    // Sanitize HTML
+    sanitizeHtml(html) {
+        const div = document.createElement('div');
+        div.textContent = html;
+        return div.innerHTML;
     },
 
-    removeStorage: function(key) {
-        try {
-            localStorage.removeItem(key);
-            return true;
-        } catch (e) {
-            console.error('Storage remove error:', e);
-            return false;
-        }
+    // Escape special characters for regex
+    escapeRegex(string) {
+        return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     },
 
-    downloadFile: function(filename, content, mimeType = 'text/plain') {
-        const blob = new Blob([content], { type: mimeType });
+    // Download file
+    downloadFile(content, filename, type = 'text/html') {
+        const blob = new Blob([content], { type });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
@@ -63,7 +79,19 @@ window.utils = {
         URL.revokeObjectURL(url);
     },
 
-    readFile: function(file) {
+    // Copy to clipboard
+    async copyToClipboard(text) {
+        try {
+            await navigator.clipboard.writeText(text);
+            return true;
+        } catch (err) {
+            console.error('Failed to copy:', err);
+            return false;
+        }
+    },
+
+    // Read file as text
+    readFileAsText(file) {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
             reader.onload = (e) => resolve(e.target.result);
@@ -72,63 +100,41 @@ window.utils = {
         });
     },
 
-    log: function(message, data = null, level = 'log') {
-        const timestamp = new Date().toISOString();
-        console[level](`[${timestamp}] ${message}`, data || '');
-        return { timestamp, message, data, level };
+    // Read file as data URL
+    readFileAsDataURL(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = (e) => resolve(e.target.result);
+            reader.onerror = (e) => reject(e);
+            reader.readAsDataURL(file);
+        });
     },
 
-    trackEvent: function(name, data = {}) {
-        return { name, data, timestamp: new Date().toISOString() };
+    // Compress string (simple LZ-based)
+    compress(str) {
+        try {
+            return btoa(unescape(encodeURIComponent(str)));
+        } catch (e) {
+            return str;
+        }
     },
 
-    generateId: function(length = 8) {
-        return Math.random().toString(36).substring(2, 2 + length);
+    // Decompress string
+    decompress(str) {
+        try {
+            return decodeURIComponent(escape(atob(str)));
+        } catch (e) {
+            return str;
+        }
     },
 
-    formatBytes: function(bytes) {
-        if (bytes === 0) return '0 Bytes';
-        const k = 1024;
-        const sizes = ['Bytes', 'KB', 'MB'];
-        const i = Math.floor(Math.log(bytes) / Math.log(k));
-        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    // Validate email
+    isValidEmail(email) {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     },
 
-    copyToClipboard: function(text) {
-        return navigator.clipboard.writeText(text).then(() => true);
-    }
-
-    randomId: function(length = 8) {
-        return this.generateId(length);
-    },
-
-    getTheme: function() {
-        return localStorage.getItem('theme') || 'light';
-    },
-
-    setTheme: function(theme) {
-        localStorage.setItem('theme', theme);
-        document.documentElement.setAttribute('data-theme', theme);
-        return theme;
-    },
-
-    toggleTheme: function() {
-        const currentTheme = this.getTheme();
-        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-        return this.setTheme(newTheme);
-    },
-
-    capitalize: function(str) {
-        if (!str) return '';
-        return str.charAt(0).toUpperCase() + str.slice(1);
-    },
-
-    isValidEmail: function(email) {
-        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return re.test(email);
-    },
-
-    isValidUrl: function(url) {
+    // Validate URL
+    isValidURL(url) {
         try {
             new URL(url);
             return true;
@@ -137,30 +143,95 @@ window.utils = {
         }
     },
 
-    fetchWithTimeout: function(url, options = {}, timeout = 10000) {
-        return Promise.race([
-            fetch(url, options),
-            new Promise((_, reject) => 
-                setTimeout(() => reject(new Error('Request timeout')), timeout)
-            )
-        ]);
+    // Get query parameter
+    getQueryParam(param) {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(param);
     },
 
-    clearStorage: function() {
-        try {
-            localStorage.clear();
-            return true;
-        } catch (e) {
-            console.error('Storage clear error:', e);
-            return false;
+    // Set query parameter
+    setQueryParam(param, value) {
+        const url = new URL(window.location);
+        url.searchParams.set(param, value);
+        window.history.pushState({}, '', url);
+    },
+
+    // Local storage with error handling
+    storage: {
+        get(key, defaultValue = null) {
+            try {
+                const item = localStorage.getItem(key);
+                return item ? JSON.parse(item) : defaultValue;
+            } catch (e) {
+                console.error('Storage get error:', e);
+                return defaultValue;
+            }
+        },
+
+        set(key, value) {
+            try {
+                localStorage.setItem(key, JSON.stringify(value));
+                return true;
+            } catch (e) {
+                console.error('Storage set error:', e);
+                return false;
+            }
+        },
+
+        remove(key) {
+            try {
+                localStorage.removeItem(key);
+                return true;
+            } catch (e) {
+                console.error('Storage remove error:', e);
+                return false;
+            }
+        },
+
+        clear() {
+            try {
+                localStorage.clear();
+                return true;
+            } catch (e) {
+                console.error('Storage clear error:', e);
+                return false;
+            }
         }
     },
 
-    slugify: function(str) {
-        return str
-            .toLowerCase()
-            .replace(/[^\w\s-]/g, '')
-            .replace(/[\s_-]+/g, '-')
-            .replace(/^-+|-+$/g, '');
+    // Session storage
+    session: {
+        get(key, defaultValue = null) {
+            try {
+                const item = sessionStorage.getItem(key);
+                return item ? JSON.parse(item) : defaultValue;
+            } catch (e) {
+                console.error('Session get error:', e);
+                return defaultValue;
+            }
+        },
+
+        set(key, value) {
+            try {
+                sessionStorage.setItem(key, JSON.stringify(value));
+                return true;
+            } catch (e) {
+                console.error('Session set error:', e);
+                return false;
+            }
+        },
+
+        remove(key) {
+            try {
+                sessionStorage.removeItem(key);
+                return true;
+            } catch (e) {
+                console.error('Session remove error:', e);
+                return false;
+            }
+        }
     }
 };
+
+// Make available globally
+window.Utils = Utils;
